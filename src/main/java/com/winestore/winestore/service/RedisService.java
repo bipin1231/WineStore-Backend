@@ -19,11 +19,15 @@ public class RedisService {
     private final ObjectMapper mapper = new ObjectMapper();
 
     public void storeOtpAndData(UserRequestDTO request, String otp) throws JsonProcessingException {
-        String userJson = mapper.writeValueAsString(request);
-        redisTemplate.opsForValue().set("OTP:" + request.getEmail(), otp, 5, TimeUnit.MINUTES);
-        redisTemplate.opsForValue().set("SIGNUP:" + request.getEmail(), userJson, 5, TimeUnit.MINUTES);
+        try {
+            String userJson = mapper.writeValueAsString(request);
+            redisTemplate.opsForValue().set("OTP:" + request.getEmail(), otp, 5, TimeUnit.MINUTES);
+            redisTemplate.opsForValue().set("SIGNUP:" + request.getEmail(), userJson, 5, TimeUnit.MINUTES);
+            System.out.println("Stored OTP and data in Redis.");
+        } catch (Exception e) {
+            System.err.println("Redis store failed: " + e.getMessage());
+        }
     }
-
     public String getOtp(String email) {
         return redisTemplate.opsForValue().get("OTP:" + email);
     }

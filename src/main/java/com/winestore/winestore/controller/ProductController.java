@@ -80,7 +80,7 @@ public List<String> uploadImage(@RequestParam("image") List<MultipartFile> image
     productService.updateProduct(name,product);
 }
 
-@PutMapping("/update-size/{name}")
+@PutMapping("/update-size/{id}")
 public void updateProductSize(@PathVariable Long id,@RequestBody ProductSizeDTO product){
     productService.updateProductSize(id,product);
 }
