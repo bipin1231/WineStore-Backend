@@ -13,7 +13,7 @@ public class CartItem {
 
     int quantity=0;
 
-
+    Double totalPrice;
     @ManyToOne
     @JoinColumn(name = "cart_id")
     private Cart cart;

@@ -1,15 +1,12 @@
 package com.winestore.winestore.service;
 
+import com.winestore.winestore.DTO.CartItemAddRequestDTO;
 import com.winestore.winestore.entity.Cart;
 import com.winestore.winestore.entity.CartItem;
 import com.winestore.winestore.entity.Product;
-import com.winestore.winestore.repository.CartItemRepo;
-import com.winestore.winestore.repository.CartRepo;
-import com.winestore.winestore.repository.ProductRepo;
-import com.winestore.winestore.repository.UserRepo;
+import com.winestore.winestore.entity.ProductSize;
+import com.winestore.winestore.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
 
@@ -34,6 +31,8 @@ public class CartItemService {
 
     @Autowired
     private ProductService productService;
+    @Autowired
+    private ProductSizeRepo productSizeRepo;
 
 
 //    public void addToCart(String product, int quantity) {
@@ -51,39 +50,52 @@ public class CartItemService {
 //    }
 
 
-    public CartItem addItem(Cart cart,String productName,int quantity){
-            //Optional<Cart> cart=cartService.getCartByUsername(username);
-            Optional<Product> product=productRepo.findByName(productName);
-        CartItem cartItem=new CartItem();
-        cartItem.setCart(cart);
-        cartItem.setProduct(product.get());
-        cartItem.setQuantity(quantity);
-        return cartItemRepo.save(cartItem);
-    }
-    public CartItem updateCartItem(String username, String productName,int quantity){
-        Long userId=userRepo.findByUsername(username).get().getId();
-        Cart cart=cartRepo.findByUserId(userId).get();
 
-        CartItem existingItem=cart.getCartItem().stream()
-                .filter(item->item.getProduct().getName().equals(productName))
-                .findFirst()
+public void addItemToCart(Cart cart, CartItemAddRequestDTO dto) {
+    Optional<ProductSize> sizeOpt = productSizeRepo.findById(dto.getSizeId());
+
+    if (sizeOpt.isEmpty()) {
+        throw new RuntimeException("Product size not found");
+    }
+
+    Optional<Product> productOpt = productRepo.findById(dto.getProductId());
+    if (productOpt.isEmpty()) {
+        throw new RuntimeException("Product not found");
+    }
+
+    Product product = productOpt.get();
+    ProductSize productSize = sizeOpt.get();
+
+    Optional<CartItem> cartItemOpt=cartItemRepo.findByCartAndProductAndSize(cart,product,productSize.getSize());
+
+    if(cartItemOpt.isPresent())  throw new RuntimeException("Product is already in cart");
+
+
+    CartItem cartItem = new CartItem();
+    cartItem.setCart(cart);
+    cartItem.setProduct(product);
+    cartItem.setQuantity(dto.getQuantity());
+    cartItem.setSize(productSize.getSize());
+    cartItem.setTotalPrice(dto.getQuantity() * productSize.getSellingPrice());
+
+    cartItemRepo.save(cartItem);
+}
+
+    public CartItem updateCartItem(Long cartItemId,int quantity){
+
+
+
+        CartItem existingItem=cartItemRepo.findById(cartItemId)
                 .orElseThrow(() -> new RuntimeException("Product not found in cart"));
         existingItem.setQuantity(quantity);
-
 
         cartItemRepo.save(existingItem);
         return existingItem;
     }
-    public void removeCartItem(String username,String productName){
-        Long userId=userRepo.findByUsername(username).get().getId();
-        Cart cart=cartRepo.findByUserId(userId).get();
-        CartItem existingItem=cart.getCartItem().stream()
-                .filter(item->item.getProduct().getName().equals(productName))
-                .findFirst()
-                .orElseThrow(() -> new RuntimeException("Product not found in cart"));
-        cart.getCartItem().remove(existingItem);
 
-        cartRepo.save(cart);
+    public void removeCartItem(Long cartItemId){
+
+        cartItemRepo.deleteById(cartItemId);
 
     }
 

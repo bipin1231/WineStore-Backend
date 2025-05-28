@@ -1,7 +1,6 @@
 package com.winestore.winestore.service;
 
-import com.winestore.winestore.DTO.UserDTO;
-import com.winestore.winestore.DTO.UserRequestDTO;
+import com.winestore.winestore.DTO.UserResponseDTO;
 import com.winestore.winestore.entity.User;
 import com.winestore.winestore.repository.UserRepo;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,7 +27,7 @@ public class UserService {
     public Optional<User> findByEmailAndAuthProvider(String email, String authProvider){
        return userRepo.findByEmailAndAuthProvider(email, authProvider);
     }
-    public List<UserDTO> getUser(){
-        return userRepo.findAll().stream().map(UserDTO::new).collect(Collectors.toList());
+    public List<UserResponseDTO> getUser(){
+        return userRepo.findAll().stream().map(UserResponseDTO::new).collect(Collectors.toList());
     }
 }

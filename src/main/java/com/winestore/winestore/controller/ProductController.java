@@ -38,9 +38,9 @@ private final  String folder_path="C://Users//bipin//Downloads//winestore-images
     return productService.getAll();
 }
 
-@GetMapping("{name}")
-    public ProductResponseDTO getProductByName(@PathVariable String name){
-    return productService.getProductByName(name);
+@GetMapping("{id}")
+    public ProductResponseDTO getProductById(@PathVariable Long id){
+    return productService.getProductById(id);
 }
 
 @PostMapping("upload-image")

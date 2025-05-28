@@ -64,8 +64,8 @@ List<ProductSize> productSizeList= dto.getProductSize().stream().map(size-> {
                 .collect(Collectors.toList());
     }
 
-    public ProductResponseDTO getProductByName(String name){
-        Product p= productRepo.findByName(name).orElseThrow(()->new IllegalArgumentException("Product not found"));//stream().map(ProductResponseDTO::new).collect(Collectors.toList());
+    public ProductResponseDTO getProductById(Long id){
+        Product p= productRepo.findById(id).orElseThrow(()->new IllegalArgumentException("Product not found"));//stream().map(ProductResponseDTO::new).collect(Collectors.toList());
         return new ProductResponseDTO(p);
     }
 
@@ -93,6 +93,8 @@ List<ProductSize> productSizeList= dto.getProductSize().stream().map(size-> {
         productSizeRepo.save(oldProductSize);
 
     }
+
+
 
     public void deleteProduct(String name){
         Optional<Product> oldProduct=productRepo.findByName(name);

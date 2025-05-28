@@ -29,27 +29,27 @@ public class OrderController {
                           @RequestParam String size){
        // Cart cart=orderService.createOrUpdateCart(username);
 
-        orderService.placeOrder(productName,quantity,size);
+//        orderService.placeOrder(productName,quantity,size);
 
     }
     @PostMapping("/place-cart-order")
-    public OrderDTO placeCartOrder(@RequestParam String username){
+    public void placeCartOrder(@RequestParam Long userId){
 
-       Order order= orderService.placeCartOrder(username);
-        return new OrderDTO(order);
+       //Order order= orderService.placeCartOrder(userId);
+      //  return new OrderDTO(order);
     }
-
-    @DeleteMapping("/delete")
-    public String removeCartItem(@RequestParam String username,
-                                 @RequestParam String productName
-                                ){
-
-
-        cartItemService.removeCartItem(username,productName);
-
-        return "cart item deleted successfully";
-
-    }
+//
+//    @DeleteMapping("/delete")
+//    public String removeCartItem(@RequestParam String username,
+//                                 @RequestParam String productName
+//                                ){
+//
+//
+//        cartItemService.removeCartItem(username,productName);
+//
+//        return "cart item deleted successfully";
+//
+//    }
     @GetMapping
     public List<OrderDTO> getOrder(){
         return orderService.getAllOrder();

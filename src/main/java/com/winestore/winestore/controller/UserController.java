@@ -1,14 +1,14 @@
 package com.winestore.winestore.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.winestore.winestore.DTO.LoginResponseDTO;
 import com.winestore.winestore.DTO.OtpRequest;
-import com.winestore.winestore.DTO.UserDTO;
+import com.winestore.winestore.DTO.UserResponseDTO;
 import com.winestore.winestore.DTO.UserRequestDTO;
 import com.winestore.winestore.entity.User;
 import com.winestore.winestore.service.RedisService;
 import com.winestore.winestore.service.UserDetailServiceImpl;
 import com.winestore.winestore.service.UserService;
-import com.winestore.winestore.tempStore.OtpStore;
 import com.winestore.winestore.util.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -123,14 +123,14 @@ public ResponseEntity<?> login(@RequestBody UserRequestDTO userDto){
         UserDetails userDetails=userDetailService.loadUserByUsername(user.getEmail());
         String jwt=jwtUtil.generateToken(user);
         System.out.println("jwt token is---"+jwt);
-        return ResponseEntity.ok(Map.of("token", jwt));
+        return ResponseEntity.ok(new LoginResponseDTO(jwt,new UserResponseDTO(user)));
     }catch (Exception e){
         return new ResponseEntity<>("Incorrect username or password", HttpStatus.BAD_REQUEST);
     }
 }
 
 @GetMapping
-    public List<UserDTO> getUser(){
+    public List<UserResponseDTO> getUser(){
     return userService.getUser();
 }
 
