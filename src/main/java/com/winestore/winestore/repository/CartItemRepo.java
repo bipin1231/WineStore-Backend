@@ -13,7 +13,7 @@ public interface CartItemRepo extends JpaRepository<CartItem,Long> {
 
 
     List<CartItem> findAllByCartId(Long cartId);
-    Optional<CartItem> findByCartAndProductAndSize(Cart cart, Product product, String size);
+    Optional<CartItem> findByCartAndProductAndProductSize(Cart cart, Product product, ProductSize productSize);
 
 
 

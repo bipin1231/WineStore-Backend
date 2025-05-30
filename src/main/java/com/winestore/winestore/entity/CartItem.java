@@ -11,10 +11,11 @@ public class CartItem {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    int quantity=0;
+    private int quantity=0;
 
-    Double totalPrice;
-    @ManyToOne
+   private Double totalPrice;
+
+   @ManyToOne
     @JoinColumn(name = "cart_id")
     private Cart cart;
 
@@ -22,6 +23,8 @@ public class CartItem {
     @JoinColumn(name = "product_id")
     private Product product;
 
-    private String size;
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "product_size_id")
+    private ProductSize productSize;
 
 }

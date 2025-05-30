@@ -3,6 +3,8 @@ package com.winestore.winestore.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.List;
+
 
 @Entity
 @Table(name = "product_size")
@@ -12,7 +14,7 @@ import lombok.*;
 public class ProductSize {
  @Id
  @GeneratedValue(strategy = GenerationType.IDENTITY)
- private Long Id;
+ private Long id;
 
  private int stock = 0;
  private double sellingPrice;
@@ -22,4 +24,7 @@ public class ProductSize {
  @ManyToOne
  @JoinColumn(name = "product_id")
  private Product product;
+
+ @OneToMany(mappedBy = "productSize")
+ private List<CartItem> cartItem;
 }

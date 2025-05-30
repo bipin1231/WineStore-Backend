@@ -52,6 +52,7 @@ public class CartService {
             List<CartItem> cartItem = cartItemRepo.findAllByCartId(cart.getId()); // use findFirst if multiple items
 
             if (!cartItem.isEmpty()) {
+
                 return cartItem.stream().map(CartItemDTO::new).collect(Collectors.toList());
             } else {
                 throw new RuntimeException("No cart item found for this cart.");

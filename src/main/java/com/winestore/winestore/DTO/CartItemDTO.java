@@ -8,12 +8,17 @@ public class CartItemDTO {
         private Long cartItemId;
         private String productName;
         private int quantity;
-        private double price;
-
+        private double totalPrice;
+    private double productPrice;
+        private String size;
+        private String url;
         public CartItemDTO(CartItem cartItem) {
             this.cartItemId = cartItem.getId();
             this.productName = cartItem.getProduct().getName();
             this.quantity = cartItem.getQuantity();
-            //   this.price=cartItem.getProduct().getPrice();
+            this.size=cartItem.getProductSize().getSize();
+            this.productPrice=cartItem.getProductSize().getSellingPrice();
+            this.totalPrice=quantity*productPrice;
+            this.url=cartItem.getProduct().getImageUrl().get(0);
         }
 }

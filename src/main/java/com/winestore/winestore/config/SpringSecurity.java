@@ -48,7 +48,7 @@ public class SpringSecurity {
 //                        .requestMatchers("/admin/**").hasRole("ADMIN")
 //                        .requestMatchers("/category/**").hasAnyRole("USER", "ADMIN")
                                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-                                  .requestMatchers("/cart/**","/order/**").authenticated()
+                                  .requestMatchers("/order/**").authenticated()
                                 //      .requestMatchers("/order").authenticated()
                                 // .requestMatchers("/user").hasRole("admin")
                                 .anyRequest().permitAll()
