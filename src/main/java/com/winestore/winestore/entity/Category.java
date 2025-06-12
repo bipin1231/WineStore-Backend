@@ -18,12 +18,12 @@ public class Category {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(unique = true)
-    @NonNull
     private String name;
 
     @Column(nullable = true)
     private String description;
+
+    private String imageUrl;
 
     // Parent Category
     @ManyToOne
@@ -32,7 +32,7 @@ public class Category {
 
 
     // Subcategories
-    @OneToMany(mappedBy = "parent", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "parent", cascade = CascadeType.ALL)
     private List<Category> subcategories;
 
 

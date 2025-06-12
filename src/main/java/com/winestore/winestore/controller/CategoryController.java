@@ -1,10 +1,16 @@
 package com.winestore.winestore.controller;
 
 import com.winestore.winestore.DTO.CategoryDTO;
+import com.winestore.winestore.DTO.CategoryListDto;
 import com.winestore.winestore.DTO.CategoryRequestDTO;
+import com.winestore.winestore.DTO.CategoryUpdateDto;
 import com.winestore.winestore.entity.Category;
+import com.winestore.winestore.repository.CategoryRepo;
 import com.winestore.winestore.service.CategoryService;
+import org.apache.catalina.connector.Response;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -17,9 +23,11 @@ public class CategoryController {
 
 @Autowired
     private CategoryService categoryService;
+@Autowired
+private CategoryRepo categoryRepo;
 
 @PostMapping
-    public String saveProduct(@RequestBody CategoryRequestDTO category){
+    public String saveProduct(@ModelAttribute CategoryRequestDTO category){
     categoryService.addCategory(category);
     return "hello";
 }
@@ -30,9 +38,24 @@ public class CategoryController {
         return "hello";
     }
 
+    @PutMapping("/update-all")
+    public ResponseEntity<?> updateMultipleCategory(@ModelAttribute CategoryListDto dtoList){
+    try {
+        List<CategoryUpdateDto> dto=dtoList.getCategoryList();
+        categoryService.updateMultipleCategory(dto);
+        return new ResponseEntity<>(HttpStatus.OK);
+    } catch (Exception e) {
+      return new ResponseEntity<>("error"+e,HttpStatus.BAD_REQUEST);
+    }
+    }
+
 @GetMapping
     public List<CategoryDTO> getCategory(){
-    return categoryService.getCategory().stream().filter(dto->dto.getSubcategories()==null).toList();
+    return categoryService.getCategory();
+}
+@GetMapping("all")
+public List<Category> getCategoryAll(){
+    return categoryRepo.findAll();
 }
 
 

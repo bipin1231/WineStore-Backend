@@ -12,7 +12,7 @@ import java.util.List;
 
 public class ProductSizeDTO {
     private long id;
-    private Integer stock = 0;
+    private Integer stock;
     private Double sellingPrice;
     private Double costPrice;
     private String size;

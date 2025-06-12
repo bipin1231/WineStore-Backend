@@ -11,7 +11,7 @@ public class OrderItem {
     private Long id;
 
     private int quantity;
-    private double price;
+
     @ManyToOne
     @JoinColumn(name = "product_id")
     private Product product;
@@ -20,5 +20,7 @@ public class OrderItem {
     @JoinColumn(name = "order_id")
     private Order order;
 
-    private String size;
+    @ManyToOne
+    @JoinColumn(name = "product_size_id")
+    private ProductSize size;
 }

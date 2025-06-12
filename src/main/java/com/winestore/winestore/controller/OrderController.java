@@ -1,11 +1,8 @@
 package com.winestore.winestore.controller;
 
-import com.winestore.winestore.DTO.CartDTO;
 import com.winestore.winestore.DTO.OrderDTO;
-import com.winestore.winestore.entity.Cart;
-import com.winestore.winestore.entity.Order;
+import com.winestore.winestore.DTO.PlaceOrderRequestDto;
 import com.winestore.winestore.service.CartItemService;
-import com.winestore.winestore.service.CartService;
 import com.winestore.winestore.service.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -23,14 +20,17 @@ public class OrderController {
     private CartItemService cartItemService;
 
     @PostMapping("/place-directly")
-    public void placeOrder(
-                          @RequestParam String productName,
-                          @RequestParam int quantity,
-                          @RequestParam String size){
-       // Cart cart=orderService.createOrUpdateCart(username);
+    public String placeOrder(@RequestBody PlaceOrderRequestDto dto){
 
-//        orderService.placeOrder(productName,quantity,size);
+        try {
+            orderService.placeOrder(dto);
+        }catch (Exception e){
+            return "Errorrr"+e;
+        }
 
+
+
+        return "Order placed successfully";
     }
     @PostMapping("/place-cart-order")
     public void placeCartOrder(@RequestParam Long userId){

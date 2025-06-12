@@ -27,4 +27,7 @@ public class ProductSize {
 
  @OneToMany(mappedBy = "productSize")
  private List<CartItem> cartItem;
+
+ @OneToMany(mappedBy = "size")
+ private List<OrderItem> orderItem;
 }
