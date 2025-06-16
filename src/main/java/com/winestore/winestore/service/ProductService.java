@@ -3,16 +3,15 @@ package com.winestore.winestore.service;
 import com.winestore.winestore.DTO.*;
 import com.winestore.winestore.entity.Category;
 import com.winestore.winestore.entity.Product;
-import com.winestore.winestore.entity.ProductSize;
+import com.winestore.winestore.entity.ProductVariant;
 import com.winestore.winestore.repository.CategoryRepo;
 import com.winestore.winestore.repository.ProductRepo;
-import com.winestore.winestore.repository.ProductSizeRepo;
+import com.winestore.winestore.repository.ProductVariantRepo;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.multipart.MultipartFile;
@@ -24,7 +23,6 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
-@Repository
 @CrossOrigin("*")
 
 public class ProductService {
@@ -35,31 +33,26 @@ public class ProductService {
     private ProductRepo productRepo;
 
     @Autowired
-    private ProductSizeRepo productSizeRepo;
+    private ProductVariantRepo productVariantRepo;
+
     @Autowired
     private ImageService imageService;
+    @Autowired
+    private ProductVariantService productVariantService;
 
-    public ProductResponseDTO saveProduct(ProductRequestDTO dto,List<String> image){
-        Category category = categoryRepo.findByName(dto.getCategory()).orElseThrow(() -> new IllegalArgumentException("Invalid category ID"));
+    public void saveProduct(ProductRequestDTO dto){
+        Category category = categoryRepo.findById(dto.getCategoryId()).orElseThrow(() -> new IllegalArgumentException("Invalid category ID"));
         Product product = new Product();
         product.setName(dto.getName());
-        product.setCartoonPrice(dto.getCartoonPrice());
         product.setDescription(dto.getDescription());
         product.setCategory(category);
-        product.setImageUrl(image);
-List<ProductSize> productSizeList= dto.getProductSize().stream().map(size-> {
-                    ProductSize productSize = new ProductSize();
-                    productSize.setSize(size.getSize());
-                    productSize.setStock(size.getStock());
-            productSize.setSellingPrice(size.getSellingPrice());
-                    productSize.setCostPrice(size.getCostPrice());
-                    productSize.setProduct(product);
-                    return productSize;
-                }
-        ).toList();
-        product.setProductSize(productSizeList);
-         Product p=productRepo.save(product);
-        return new ProductResponseDTO(p);
+        Product savedProduct = productRepo.save(product);
+        if(!dto.getProductVariantRequestDto().isEmpty()) {
+           productVariantService.createProductVariant(dto.getProductVariantRequestDto(), savedProduct.getId());
+
+        }
+
+
     }
 
 
@@ -71,16 +64,12 @@ List<ProductSize> productSizeList= dto.getProductSize().stream().map(size-> {
                 .collect(Collectors.toList());
     }
     public List<ProductSizeWithProductDTO> getAllProductSizeWithProduct() {
-        return productSizeRepo.findAll()
+        return productVariantRepo.findAll()
                 .stream()
                 .map(ProductSizeWithProductDTO::new)
                 .collect(Collectors.toList());
     }
 
-    public ProductResponseDTO getProductById(Long id){
-        Product p= productRepo.findById(id).orElseThrow(()->new IllegalArgumentException("Product not found"));//stream().map(ProductResponseDTO::new).collect(Collectors.toList());
-        return new ProductResponseDTO(p);
-    }
 
     public void updateProduct(String name, Product newProduct){
         Optional<Product> oldProduct=productRepo.findByName(name);
@@ -97,22 +86,22 @@ List<ProductSize> productSizeList= dto.getProductSize().stream().map(size-> {
     }
 
     public void updateProductSize(Long id, ProductSizeDTO dto){
-        ProductSize oldProductSize=productSizeRepo.findById(id).orElseThrow(()-> new IllegalArgumentException("Invalid product size id"));
+        ProductVariant oldProductVariant = productVariantRepo.findById(id).orElseThrow(()-> new IllegalArgumentException("Invalid product size id"));
 
-        if(dto.getStock()!=null) oldProductSize.setStock(dto.getStock());
-        if(dto.getSellingPrice()!=null) oldProductSize.setSellingPrice(dto.getSellingPrice());
-        if(dto.getCostPrice()!=null) oldProductSize.setCostPrice(dto.getCostPrice());
+        if(dto.getStock()!=null) oldProductVariant.setStock(dto.getStock());
+        if(dto.getSellingPrice()!=null) oldProductVariant.setSellingPrice(dto.getSellingPrice());
+        if(dto.getCostPrice()!=null) oldProductVariant.setCostPrice(dto.getCostPrice());
 
-        productSizeRepo.save(oldProductSize);
+        productVariantRepo.save(oldProductVariant);
 
     }
 @Transactional
     public void updateMultipleProductSize(List<ProductSizeDTO> dto){
         dto.forEach(size->{
-            ProductSize oldProductSize=productSizeRepo.findById(size.getId()).orElseThrow(()-> new IllegalArgumentException("Invalid product size id"));
-            if(size.getStock()!=null) oldProductSize.setStock(size.getStock());
-            if(size.getSellingPrice()!=null) oldProductSize.setSellingPrice(size.getSellingPrice());
-            if(size.getCostPrice()!=null) oldProductSize.setCostPrice(size.getCostPrice());
+            ProductVariant oldProductVariant = productVariantRepo.findById(size.getId()).orElseThrow(()-> new IllegalArgumentException("Invalid product size id"));
+            if(size.getStock()!=null) oldProductVariant.setStock(size.getStock());
+            if(size.getSellingPrice()!=null) oldProductVariant.setSellingPrice(size.getSellingPrice());
+            if(size.getCostPrice()!=null) oldProductVariant.setCostPrice(size.getCostPrice());
         });
 
     }
@@ -178,23 +167,30 @@ List<ProductSize> productSizeList= dto.getProductSize().stream().map(size-> {
     }
 
 
-
-
     public void deleteProduct(String name){
         Optional<Product> oldProduct=productRepo.findByName(name);
         oldProduct.ifPresent(product -> productRepo.delete(product));
     }
 
-    public List<ProductResponseDTO> findByQuery(String query){
-        return productRepo.searchByQuery(query).stream().map(ProductResponseDTO::new).collect(Collectors.toList());
+
+
+
+    public List<String> getMatchingNamesBySearchQuery(String query){
+        return productRepo.getMatchingNamesBySearchQuery(query);
+    }
+    public List<ProductSizeWithProductDTO> findByQuery(String query){
+        return productRepo.searchByQuery(query).stream().map(ProductSizeWithProductDTO::new).toList();
     }
     public List<ProductResponseDTO> filterByQuery(String query){
         return productRepo.filterByQuery(query).stream().map(ProductResponseDTO::new).collect(Collectors.toList());
     }
 
+
     public Page<ProductSizeWithProductDTO> filterAndSort(String categoryName, Double minPrice, Double maxPrice, int page, int size, String direction) {
-//        Sort sort = Sort.by("sellingPrice");
-//        sort = direction.equalsIgnoreCase("desc") ? sort.descending() : sort.ascending();
+
+        if(categoryName.equals("undefined") || categoryName.equals("null")){
+            categoryName=null;
+        }
         Pageable pageable = PageRequest.of(page, size);
         if(direction.equalsIgnoreCase("desc")){
             return productRepo.filterProductsDESC(categoryName,pageable).map(ProductSizeWithProductDTO::new);

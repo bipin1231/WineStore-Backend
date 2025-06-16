@@ -1,12 +1,10 @@
 package com.winestore.winestore.DTO;
 
 import com.winestore.winestore.entity.Product;
-import com.winestore.winestore.entity.ProductSize;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 
 @Data
@@ -28,7 +26,7 @@ private double cartoonPrice;
         this.description = product.getDescription();
         this.cartoonPrice=product.getCartoonPrice();
         this.imageUrl=product.getImageUrl();
-        this.productSize = product.getProductSize().stream().map(ProductSizeDTO::new).toList();
+        this.productSize = product.getProductVariant().stream().map(ProductSizeDTO::new).toList();
 
 
         if (product.getCategory() != null) {

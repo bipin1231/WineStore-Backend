@@ -1,11 +1,8 @@
 package com.winestore.winestore.DTO;
 
-import com.winestore.winestore.entity.Product;
-import com.winestore.winestore.entity.ProductSize;
+import com.winestore.winestore.entity.ProductVariant;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import java.util.List;
 
 @Data
 @NoArgsConstructor
@@ -17,12 +14,12 @@ public class ProductSizeDTO {
     private Double costPrice;
     private String size;
 
-    public ProductSizeDTO(ProductSize productSize){
-        this.id= productSize.getId();
-        this.stock=productSize.getStock();
-        this.sellingPrice=productSize.getSellingPrice();
-        this.costPrice=productSize.getCostPrice();
-        this.size=productSize.getSize();
+    public ProductSizeDTO(ProductVariant productVariant){
+        this.id= productVariant.getId();
+        this.stock= productVariant.getStock();
+        this.sellingPrice= productVariant.getSellingPrice();
+        this.costPrice= productVariant.getCostPrice();
+      //  this.size= productVariant.getSize();
     }
 
 }

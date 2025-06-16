@@ -5,7 +5,7 @@ import com.winestore.winestore.DTO.CartItemDTO;
 import com.winestore.winestore.entity.Cart;
 import com.winestore.winestore.entity.CartItem;
 import com.winestore.winestore.entity.Product;
-import com.winestore.winestore.entity.ProductSize;
+import com.winestore.winestore.entity.ProductVariant;
 import com.winestore.winestore.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -35,7 +35,7 @@ public class CartItemService {
     @Autowired
     private ProductService productService;
     @Autowired
-    private ProductSizeRepo productSizeRepo;
+    private ProductVariantRepo productVariantRepo;
 
 
 //    public void addToCart(String product, int quantity) {
@@ -55,7 +55,7 @@ public class CartItemService {
 
 
 public void addItemToCart(Cart cart, CartItemAddRequestDTO dto) {
-    Optional<ProductSize> sizeOpt = productSizeRepo.findById(dto.getSizeId());
+    Optional<ProductVariant> sizeOpt = productVariantRepo.findById(dto.getProductVariantId());
 
     if (sizeOpt.isEmpty()) {
         throw new RuntimeException("Product size not found");
@@ -67,9 +67,9 @@ public void addItemToCart(Cart cart, CartItemAddRequestDTO dto) {
     }
 
     Product product = productOpt.get();
-    ProductSize productSize = sizeOpt.get();
+    ProductVariant productVariant = sizeOpt.get();
 
-    Optional<CartItem> cartItemOpt=cartItemRepo.findByCartAndProductAndProductSize(cart,product,productSize);
+    Optional<CartItem> cartItemOpt=cartItemRepo.findByCartAndProductAndProductVariant(cart,product, productVariant);
 
     if(cartItemOpt.isPresent())  throw new RuntimeException("Product is already in cart");
 
@@ -78,13 +78,13 @@ public void addItemToCart(Cart cart, CartItemAddRequestDTO dto) {
     cartItem.setCart(cart);
     cartItem.setProduct(product);
     cartItem.setQuantity(dto.getQuantity());
-    cartItem.setProductSize(productSize);
-    cartItem.setTotalPrice(dto.getQuantity() * productSize.getSellingPrice());
+    cartItem.setProductVariant(productVariant);
+    cartItem.setTotalPrice(dto.getQuantity() * productVariant.getSellingPrice());
 
     cartItemRepo.save(cartItem);
 }
 
-    public CartItem updateCartItem(Long cartItemId,int quantity){
+    public void updateCartItem(Long cartItemId, int quantity){
 
 
 
@@ -93,7 +93,6 @@ public void addItemToCart(Cart cart, CartItemAddRequestDTO dto) {
         existingItem.setQuantity(quantity);
 
         cartItemRepo.save(existingItem);
-        return existingItem;
     }
 
     public List<CartItemDTO> getCartItemByUserId(Long userId) {

@@ -63,6 +63,6 @@ public class CartService {
     }
 
     public List<CartDTO> getAllCart(){
-        return cartRepo.findAll().stream().map(cart->new CartDTO(cart)).collect(Collectors.toList());
+        return cartRepo.findAll().stream().map(CartDTO::new).collect(Collectors.toList());
     }
 }

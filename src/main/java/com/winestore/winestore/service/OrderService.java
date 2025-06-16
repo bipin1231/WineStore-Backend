@@ -31,7 +31,7 @@ public class OrderService {
     private ProductRepo productRepo;
 
     @Autowired
-    private ProductSizeRepo productSizeRepo;
+    private ProductVariantRepo productVariantRepo;
 
 
 //    @Transactional
@@ -87,12 +87,12 @@ public class OrderService {
         Product product = productRepo.findById(placeOrder.getProductId())
                 .orElseThrow(() -> new RuntimeException("Product not found"));
 
-        ProductSize productSize = productSizeRepo.findById(placeOrder.getProductSizeId())
+        ProductVariant productVariant = productVariantRepo.findById(placeOrder.getProductSizeId())
                 .orElseThrow(() -> new RuntimeException("Product size not found"));
 
         int quantity = placeOrder.getQuantity();
 
-        if (productSize.getStock() < quantity) {
+        if (productVariant.getStock() < quantity) {
             throw new RuntimeException("Not enough stock");
         }
 
@@ -104,19 +104,19 @@ public class OrderService {
         OrderItem orderItem = new OrderItem();
         orderItem.setProduct(product);
         orderItem.setQuantity(quantity);
-        orderItem.setSize(productSize);
+        orderItem.setProductVariant(productVariant);
         orderItem.setOrder(order);
 
         order.setOrderItem(List.of(orderItem)); // Assuming it's a one-to-many relationship
-        order.setTotalPrice(productSize.getSellingPrice() * quantity);
+        order.setTotalPrice(productVariant.getSellingPrice() * quantity);
 
         // Save order (cascades to orderItem if configured)
         orderRepo.save(order);
         orderItemRepo.save(orderItem);
 
         // Update stock
-        productSize.setStock(productSize.getStock() - quantity);
-        productSizeRepo.save(productSize); // 💡 Save this, not the product
+        productVariant.setStock(productVariant.getStock() - quantity);
+        productVariantRepo.save(productVariant); // 💡 Save this, not the product
 
         new OrderDTO(order);
     }

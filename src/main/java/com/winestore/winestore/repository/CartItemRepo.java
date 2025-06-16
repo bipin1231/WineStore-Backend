@@ -3,7 +3,7 @@ package com.winestore.winestore.repository;
 import com.winestore.winestore.entity.Cart;
 import com.winestore.winestore.entity.CartItem;
 import com.winestore.winestore.entity.Product;
-import com.winestore.winestore.entity.ProductSize;
+import com.winestore.winestore.entity.ProductVariant;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
@@ -13,7 +13,7 @@ public interface CartItemRepo extends JpaRepository<CartItem,Long> {
 
 
     List<CartItem> findAllByCartId(Long cartId);
-    Optional<CartItem> findByCartAndProductAndProductSize(Cart cart, Product product, ProductSize productSize);
+    Optional<CartItem> findByCartAndProductAndProductVariant(Cart cart, Product product, ProductVariant productVariant);
 
 
 

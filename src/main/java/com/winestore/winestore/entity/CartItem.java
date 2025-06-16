@@ -1,6 +1,5 @@
 package com.winestore.winestore.entity;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -24,7 +23,7 @@ public class CartItem {
     private Product product;
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "product_size_id")
-    private ProductSize productSize;
+    @JoinColumn(name = "product_variant_id")
+    private ProductVariant productVariant;
 
 }

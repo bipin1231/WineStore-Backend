@@ -11,7 +11,7 @@ public class CartItemAddRequestDTO {
     Long userId;
     Long productId;
     int quantity;
-    Long sizeId;
+    Long productVariantId;
 
 
 }

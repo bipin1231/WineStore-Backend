@@ -15,5 +15,4 @@ public class CategoryRequestDTO {
     private String parentCategory;
     private MultipartFile image;
 
-
 }

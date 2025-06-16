@@ -1,6 +1,5 @@
 package com.winestore.winestore.DTO;
 
-import com.winestore.winestore.entity.ProductSize;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -10,11 +9,7 @@ import java.util.List;
 @NoArgsConstructor
 public class ProductRequestDTO {
     private String name;
-    private double cartoonPrice;
     private String description;
-    private String category;
-
-    private List<ProductSizeDTO> productSize;
-
-
+    private Long categoryId;
+    private List<ProductVariantRequestDto> productVariantRequestDto;
 }

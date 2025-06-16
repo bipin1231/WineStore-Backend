@@ -36,20 +36,29 @@ public class CategoryService {
                 System.out.println("parentCategory: " + categoryRequestDTO.getParentCategory());
 
                 Category parentCategory = categoryRepo.findByName(categoryRequestDTO.getParentCategory()).orElseThrow(() -> new IllegalArgumentException("Invalid category ID"));
-                String imageUrl=imageService.addImage(categoryRequestDTO.getImage());
                 Category subCategory = new Category();
+                if(categoryRequestDTO.getImage()!=null && !categoryRequestDTO.getImage().isEmpty()){
+                    String imageUrl=imageService.addImage(categoryRequestDTO.getImage());
+                    subCategory.setImageUrl(imageUrl);
+                }
+
+
                 subCategory.setParent(parentCategory);
                 subCategory.setName(categoryRequestDTO.getCategory());
                 subCategory.setDescription(categoryRequestDTO.getDescription());
-                subCategory.setImageUrl(imageUrl);
+
                 categoryRepo.save(subCategory);
             } else {
                 Category category = new Category();
-                String imageUrl=imageService.addImage(categoryRequestDTO.getImage());
+                if(categoryRequestDTO.getImage()!=null && !categoryRequestDTO.getImage().isEmpty()){
+                    String imageUrl=imageService.addImage(categoryRequestDTO.getImage());
+                    category.setImageUrl(imageUrl);
+                }
+
                 category.setName(categoryRequestDTO.getCategory());
                 category.setDescription(categoryRequestDTO.getDescription());
                 category.setParent(null);
-                category.setImageUrl(imageUrl);
+
                 categoryRepo.save(category);
             }
         }catch (Exception e) {

@@ -1,10 +1,6 @@
 package com.winestore.winestore.entity;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
-import jakarta.annotation.Generated;
 import jakarta.persistence.*;
-import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -44,7 +40,7 @@ public class Product {
  private Category category;
 
  @OneToMany(mappedBy = "product", cascade = CascadeType.ALL)
- private List<ProductSize> productSize;
+ private List<ProductVariant> productVariant;
 }
 
 

@@ -31,154 +31,59 @@ import java.util.UUID;
 
 public class ProductController {
 
-@Autowired
-    private ProductRepo productRepo;
+    @Autowired
+        private ProductRepo productRepo;
 
-@Autowired
-    private ProductService productService;
-
-private final  String folder_path="C://Users//bipin//Downloads//winestore-images/";
+    @Autowired
+        private ProductService productService;
 
 
-@GetMapping
-    public List<ProductResponseDTO> getProduct(){
-    return productService.getAll();
-}
+    @GetMapping
+        public List<ProductResponseDTO> getProduct(){
+        return productService.getAll();
+    }
+
     @GetMapping("product-size-all")
-    public List<ProductSizeWithProductDTO> getAllProductSizeWithProduct(){
-        return productService.getAllProductSizeWithProduct();
-    }
-
-@GetMapping("/search")
-    public List<ProductResponseDTO> getProductByQuery(@RequestParam String query){
-    return productService.findByQuery(query);
-}
-
-    @GetMapping("/filter")
-    public List<ProductResponseDTO> getProductByQueryFilter(@RequestParam String query){
-        return productService.filterByQuery(query);
-    }
-
-    @GetMapping("{id}")
-    public ProductResponseDTO getProductById(@PathVariable Long id){
-    return productService.getProductById(id);
-}
-    @GetMapping("filter-and-sort")
-    public Page<ProductSizeWithProductDTO> filterAndSort(@RequestParam(required = false) String categoryName,
-                                                         @RequestParam(required = false) Double minPrice,
-                                                         @RequestParam(required = false) Double maxPrice,
-                                                         @RequestParam(defaultValue = "0") int page,
-                                                         @RequestParam(defaultValue = "20") int size,
-                                                         @RequestParam(defaultValue = "asc") String sort){
-        return productService.filterAndSort(categoryName,minPrice,maxPrice,page,size,sort);
-    }
-
-@PostMapping("upload-image")
-public List<String> uploadImage(@RequestParam("image") List<MultipartFile> images) throws IOException{
-
-    List<String> imageFileName=new ArrayList<>();
-    for (MultipartFile file:images){
-        String fileName= UUID.randomUUID()+"_"+file.getOriginalFilename();
-        Path filePath= Paths.get(folder_path+fileName);
-        Files.copy(file.getInputStream(),filePath);
-        imageFileName.add(fileName);
-
-    }
-  return imageFileName;
-
-}
-    @PostMapping
-    public void createProduct(@RequestPart("product") ProductRequestDTO productRequestDTO,
-                              @RequestPart("images") List<MultipartFile> images
-                            )throws IOException {
-
-
-        List<String> imageFileName=new ArrayList<>();
-        for (MultipartFile file:images){
-            String fileName= UUID.randomUUID()+"_"+file.getOriginalFilename();
-            Path filePath= Paths.get(folder_path+fileName);
-            Files.copy(file.getInputStream(),filePath);
-            imageFileName.add(fileName);
-        }
-        productService.saveProduct(productRequestDTO,imageFileName);
-
-    }
-
-
-    @PutMapping("/update-product/{name}")
-    public void updateProduct(@PathVariable String name,@RequestBody Product product){
-    productService.updateProduct(name,product);
-}
-
-@PutMapping("/update-size/{id}")
-public void updateProductSize(@PathVariable Long id,@RequestBody ProductSizeDTO product){
-    productService.updateProductSize(id,product);
-}
-    @PutMapping("/update-size-all")
-    public ResponseEntity<?> updateMultipleProductSize(@RequestBody List<ProductSizeDTO> product){
-    if(product.isEmpty()) {
-        throw new IllegalArgumentException("empty updated itmes");
-    }
-    try {
-        productService.updateMultipleProductSize(product);
-        return new ResponseEntity<>("Updated Successfully", HttpStatus.OK);
-    }catch (Exception e){
-        return new ResponseEntity<>("not Updated", HttpStatus.BAD_REQUEST);
-    }
-    }
-
-    @PutMapping("/update-product-all")
-    public ResponseEntity<?> updateMultipleProductInfo(@RequestBody List<ProductUpdateDto> product){
-        if(product.isEmpty()) {
-            throw new IllegalArgumentException("empty updated itmes");
-        }
-        try {
-            productService.updateMultipleProductInfo(product);
-            return new ResponseEntity<>("Updated Successfully", HttpStatus.OK);
-        }catch (Exception e){
-            return new ResponseEntity<>("not Updated"+e, HttpStatus.BAD_REQUEST);
-        }
-    }
-
-
-    @PutMapping(value = "/update-product-image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<?> updateProductImages(
-            @RequestPart(value="existingImages",required = false) String existingImagesJson,
-            @RequestPart(value="id") String productId,
-            @RequestPart(value = "newImages", required = false) List<MultipartFile> newImages
-    ) throws IOException {
-        // ✅ Parse the JSON string into a list
-        ObjectMapper mapper = new ObjectMapper();
-        List<String> existingImages;
-        try {
-            existingImages = mapper.readValue(existingImagesJson, new TypeReference<List<String>>() {});
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body("Invalid existingImages JSON");
+        public List<ProductSizeWithProductDTO> getAllProductSizeWithProduct(){
+            return productService.getAllProductSizeWithProduct();
         }
 
-        // ✅ Do your update logic
-        productService.updateMultipleProductImage(Long.valueOf(productId), existingImages, newImages);
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+        public String createProduct(@ModelAttribute ProductRequestDTO productRequestDTO){
+            productService.saveProduct(productRequestDTO);
+            return "Product Added Successfully";
+        }
 
-        return ResponseEntity.ok("Product images updated");
-    }
+        @PutMapping("/update-product-all")
+        public ResponseEntity<?> updateMultipleProductInfo(@RequestBody List<ProductUpdateDto> product){
+            if(product.isEmpty()) {
+                throw new IllegalArgumentException("empty updated itmes");
+            }
+            try {
+                productService.updateMultipleProductInfo(product);
+                return new ResponseEntity<>("Updated Successfully", HttpStatus.OK);
+            }catch (Exception e){
+                return new ResponseEntity<>("not Updated"+e, HttpStatus.BAD_REQUEST);
+            }
+        }
 
 
 
 
 
-    @DeleteMapping("{name}")
-    public String deleteProduct(@PathVariable String name){
-    productService.deleteProduct(name);
-    return "product deleted successfully";
-}
-
-    @DeleteMapping("/delete-image")
-    public String deleteImage(
-            @RequestParam Long id,
-            @RequestParam String name
-    ){
-        productService.deleteProductImage(id,name);
+        @DeleteMapping("{name}")
+        public String deleteProduct(@PathVariable String name){
+        productService.deleteProduct(name);
         return "product deleted successfully";
     }
+
+        @DeleteMapping("/delete-image")
+        public String deleteImage(
+                @RequestParam Long id,
+                @RequestParam String name
+        ){
+            productService.deleteProductImage(id,name);
+            return "product deleted successfully";
+        }
 
 }
