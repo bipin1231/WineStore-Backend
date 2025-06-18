@@ -42,6 +42,10 @@ public class ProductController {
         public List<ProductResponseDTO> getProduct(){
         return productService.getAll();
     }
+    @GetMapping("{id}")
+    public ProductResponseDTO getProductById(@PathVariable Long id){
+        return productService.getAllProductById(id);
+    }
 
     @GetMapping("product-size-all")
         public List<ProductSizeWithProductDTO> getAllProductSizeWithProduct(){

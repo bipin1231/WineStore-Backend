@@ -13,20 +13,16 @@ public class ProductResponseDTO {
     private Long id;
     private String name;
     private String description;
-
     private String categoryName;
-private double cartoonPrice;
-    private List<ProductSizeDTO> productSize;
-    private List<String> imageUrl;
+    private List<ProductVariantResponseDto> productVariant;
+
 
 
     public ProductResponseDTO(Product product) {
         this.id = product.getId();
         this.name = product.getName();
         this.description = product.getDescription();
-        this.cartoonPrice=product.getCartoonPrice();
-        this.imageUrl=product.getImageUrl();
-        this.productSize = product.getProductVariant().stream().map(ProductSizeDTO::new).toList();
+        this.productVariant = product.getProductVariant().stream().map(ProductVariantResponseDto::new).toList();
 
 
         if (product.getCategory() != null) {

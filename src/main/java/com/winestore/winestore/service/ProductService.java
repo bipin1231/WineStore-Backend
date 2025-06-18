@@ -63,6 +63,13 @@ public class ProductService {
                 .map(ProductResponseDTO::new)
                 .collect(Collectors.toList());
     }
+    public ProductResponseDTO getAllProductById(Long id) {
+
+            Product product= productRepo.findById(id)
+                  .orElseThrow(() -> new IllegalArgumentException("Invalid Product ID"));
+            return new ProductResponseDTO(product);
+
+    }
     public List<ProductSizeWithProductDTO> getAllProductSizeWithProduct() {
         return productVariantRepo.findAll()
                 .stream()

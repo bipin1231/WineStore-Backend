@@ -39,5 +39,9 @@ public class SizeController {
         return sizeService.getAllSize();
     }
 
+    @DeleteMapping("{id}")
+    public void delete(@PathVariable Long id){
+        sizeService.deleteSize(id);
+    }
 
 }

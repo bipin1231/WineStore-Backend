@@ -15,14 +15,14 @@ public class ProductVariantResponseDto {
     private Double cartoonCostPrice;
     private Double cartoonSellingPrice;
     private List<String> imageUrl;
-    private Long sizeId;
+    private String size;
 
     public ProductVariantResponseDto(ProductVariant productVariant){
         this.id=productVariant.getId();
         this.stock= productVariant.getStock();
         this.sellingPrice=productVariant.getSellingPrice();
         this.costPrice=productVariant.getCostPrice();
-        this.sizeId=productVariant.getSize().getId();
+        this.size=productVariant.getSize().getSize();
         this.cartoonCostPrice=productVariant.getCartoonCostPrice();
         this.cartoonSellingPrice=productVariant.getCartoonSellingPrice();
         this.imageUrl=productVariant.getImageUrl();

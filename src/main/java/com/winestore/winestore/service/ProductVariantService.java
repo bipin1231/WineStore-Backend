@@ -75,16 +75,22 @@ public class ProductVariantService {
     @Transactional
     public void updateMultipleProductVariant(List<ProductVariantUpdateDto> dto){
         dto.forEach(variant->{
+
+
             ProductVariant oldProductVariant = productVariantRepo.findById(variant.getId()).orElseThrow(()-> new IllegalArgumentException("Invalid product size id"));
+            if(variant.getSizeId()!=null){
+                Size size=sizeRepo.findById(variant.getId()).orElseThrow(()->new IllegalArgumentException("invalid size id"));
+                oldProductVariant.setSize(size);
+            }
+
             if(variant.getStock()!=null) oldProductVariant.setStock(variant.getStock());
             if(variant.getSellingPrice()!=null) oldProductVariant.setSellingPrice(variant.getSellingPrice());
             if(variant.getCostPrice()!=null) oldProductVariant.setCostPrice(variant.getCostPrice());
             if(variant.getCartoonCostPrice()!=null) oldProductVariant.setCartoonCostPrice(variant.getCartoonCostPrice());
             if(variant.getCartoonSellingPrice()!=null) oldProductVariant.setCartoonSellingPrice(variant.getCartoonSellingPrice());
-            if(variant.getSizeId()!=null){
-                Size size=sizeRepo.findById(variant.getId()).orElseThrow(()->new IllegalArgumentException("invalid size id"));
-                oldProductVariant.setSize(size);
-            }
+
+
+
 
         });
 
@@ -94,6 +100,7 @@ public class ProductVariantService {
     public void updateMultipleProductVariantImage(Long id,List<String> existingImage,List<MultipartFile> newImages) throws IOException {
 
         ProductVariant oldProductVariant=productVariantRepo.findById(id).orElseThrow(()-> new IllegalArgumentException("Invalid product id"));
+
         List<String> oldImage=oldProductVariant.getImageUrl();
 
         oldImage.forEach(url->{
@@ -113,6 +120,9 @@ public class ProductVariantService {
 
         oldProductVariant.setImageUrl(commonImages);
 
+    }
+    public void deleteProductVariant(Long id){
+        productVariantRepo.deleteById(id);
     }
 
 

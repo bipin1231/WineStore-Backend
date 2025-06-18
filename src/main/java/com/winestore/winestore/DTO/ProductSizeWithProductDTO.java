@@ -4,6 +4,8 @@ import com.winestore.winestore.entity.ProductVariant;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Data
 @NoArgsConstructor
 
@@ -15,6 +17,7 @@ public class ProductSizeWithProductDTO {
     private Double price;
     private String size;
     private String categoryName;
+    private String imageUrl;
 
     public ProductSizeWithProductDTO(ProductVariant productVariant){
         this.productSizeId= productVariant.getId();
@@ -24,6 +27,8 @@ public class ProductSizeWithProductDTO {
         this.productId= productVariant.getProduct().getId();
         this.productName= productVariant.getProduct().getName();
         this.categoryName= productVariant.getProduct().getCategory().getName();
+        List<String> images = productVariant.getImageUrl();
+        this.imageUrl = (images != null && !images.isEmpty()) ? images.get(0) : null;
 
     }
 

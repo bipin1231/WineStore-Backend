@@ -33,9 +33,26 @@ public class SizeService {
         sizeRepo.save(size);
 
     }
+    public void updateSize(SizeResponseDTO dto){
+
+        Optional<Size> sizeOpt=sizeRepo.findBySize(dto.getSize());
+        if(!sizeOpt.isPresent()){
+            throw new IllegalArgumentException("size doesnt exits");
+        }
+        Size size=new Size();
+
+        size.setSize(dto.getSize());
+        size.setBottleInCartoon(dto.getBottleInCartoon());
+        sizeRepo.save(size);
+
+    }
+
     public List<SizeResponseDTO> getAllSize(){
         return sizeRepo.findAll().stream().map(SizeResponseDTO::new).toList();
     }
 
+    public void deleteSize(Long id){
+        sizeRepo.deleteById(id);
+    }
 
 }

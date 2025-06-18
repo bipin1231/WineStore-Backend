@@ -87,22 +87,19 @@ public List<ProductVariantResponseDto> getAllProductVariant(){
         }
 
 
-
-
-
-        @DeleteMapping("{name}")
-        public String deleteProduct(@PathVariable String name){
-        productService.deleteProduct(name);
+        @DeleteMapping("{id}")
+        public String deleteProductVariant(@PathVariable Long id){
+       productVariantService.deleteProductVariant(id);
         return "product deleted successfully";
     }
-
-        @DeleteMapping("/delete-image")
-        public String deleteImage(
-                @RequestParam Long id,
-                @RequestParam String name
-        ){
-            productService.deleteProductImage(id,name);
-            return "product deleted successfully";
-        }
+//
+//        @DeleteMapping("/delete-image")
+//        public String deleteImage(
+//                @RequestParam Long id,
+//                @RequestParam String name
+//        ){
+//            productService.deleteProductImage(id,name);
+//            return "product deleted successfully";
+//        }
 
 }
