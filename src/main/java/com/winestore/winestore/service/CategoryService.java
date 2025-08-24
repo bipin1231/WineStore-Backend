@@ -110,5 +110,8 @@ public class CategoryService {
         return new CategoryDTO(category.get());
 
     }
+    public void deleteCategory(Long id){
+        categoryRepo.deleteById(id);
+    }
 
 }

@@ -41,7 +41,7 @@ public class ProductService {
     private ProductVariantService productVariantService;
 
     public void saveProduct(ProductRequestDTO dto){
-        Category category = categoryRepo.findById(dto.getCategoryId()).orElseThrow(() -> new IllegalArgumentException("Invalid category ID"));
+        Category category = categoryRepo.findByName(dto.getCategory()).orElseThrow(() -> new IllegalArgumentException("Invalid category ID"));
         Product product = new Product();
         product.setName(dto.getName());
         product.setDescription(dto.getDescription());
@@ -174,8 +174,8 @@ public class ProductService {
     }
 
 
-    public void deleteProduct(String name){
-        Optional<Product> oldProduct=productRepo.findByName(name);
+    public void deleteProduct(Long id){
+        Optional<Product> oldProduct=productRepo.findById(id);
         oldProduct.ifPresent(product -> productRepo.delete(product));
     }
 

@@ -14,6 +14,7 @@ import org.springframework.security.config.annotation.authentication.configurati
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.Customizer;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.annotation.web.configurers.oauth2.client.OAuth2LoginConfigurer;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -42,11 +43,11 @@ public class SpringSecurity {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                .csrf(csrf -> csrf.disable()) // Disable CSRF for simplicity
+                .csrf(AbstractHttpConfigurer::disable) // Disable CSRF for simplicity
                 .authorizeHttpRequests(auth -> auth
-//                        .requestMatchers("/register", "/login", "/product/**","/user/**").permitAll()
+                        .requestMatchers("/register", "/login","/user/**","/category/**","/product/**").permitAll()
 //                        .requestMatchers("/admin/**").hasRole("ADMIN")
-//                        .requestMatchers("/category/**").hasAnyRole("USER", "ADMIN")
+//                        .requestMatchers().hasAnyRole("USER", "ADMIN")
                                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                                //   .requestMatchers("").authenticated()
                                 //      .requestMatchers("/order").authenticated()

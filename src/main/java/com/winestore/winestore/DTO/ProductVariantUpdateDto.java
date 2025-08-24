@@ -17,5 +17,5 @@ public class ProductVariantUpdateDto {
     private Double costPrice;
     private Double cartoonCostPrice;
     private Double cartoonSellingPrice;
-    private Long sizeId;
+//    private String size;
 }

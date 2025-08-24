@@ -26,7 +26,7 @@ public class CategoryController {
 @Autowired
 private CategoryRepo categoryRepo;
 
-@PostMapping
+@PostMapping(consumes = {"multipart/form-data"})
     public String saveProduct(@ModelAttribute CategoryRequestDTO category){
     categoryService.addCategory(category);
     return "hello";
@@ -62,5 +62,10 @@ public List<Category> getCategoryAll(){
 @GetMapping("{name}")
 public CategoryDTO getCateogryByName(@PathVariable String name){
     return categoryService.getCategoryByName(name);
+}
+@DeleteMapping("{id}")
+    public String deleteCategory(@PathVariable Long id){
+    categoryService.deleteCategory(id);
+    return "category deleted successfully";
 }
 }

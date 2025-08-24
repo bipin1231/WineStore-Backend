@@ -21,10 +21,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 @RestController
 @RequestMapping("/product")
@@ -53,12 +50,28 @@ public class ProductController {
         }
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-        public String createProduct(@ModelAttribute ProductRequestDTO productRequestDTO){
+    public ResponseEntity<Map<String, Object>> createProduct(@ModelAttribute ProductRequestDTO productRequestDTO) {
+        try {
             productService.saveProduct(productRequestDTO);
-            return "Product Added Successfully";
-        }
 
-        @PutMapping("/update-product-all")
+            Map<String, Object> response = new HashMap<>();
+            response.put("success", true);
+            response.put("message", "✅ Product added successfully");
+
+            return ResponseEntity.status(HttpStatus.CREATED).body(response);
+
+        } catch (Exception e) {
+            Map<String, Object> errorResponse = new HashMap<>();
+            errorResponse.put("success", false);
+            errorResponse.put("message", "❌ Failed to add product");
+            errorResponse.put("error", e.getMessage());
+
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
+        }
+    }
+
+
+    @PutMapping("/update-product-all")
         public ResponseEntity<?> updateMultipleProductInfo(@RequestBody List<ProductUpdateDto> product){
             if(product.isEmpty()) {
                 throw new IllegalArgumentException("empty updated itmes");
@@ -75,9 +88,9 @@ public class ProductController {
 
 
 
-        @DeleteMapping("{name}")
-        public String deleteProduct(@PathVariable String name){
-        productService.deleteProduct(name);
+        @DeleteMapping("{id}")
+        public String deleteProduct(@PathVariable Long id){
+        productService.deleteProduct(id);
         return "product deleted successfully";
     }
 

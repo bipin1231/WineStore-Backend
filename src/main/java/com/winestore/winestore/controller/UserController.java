@@ -10,13 +10,18 @@ import com.winestore.winestore.service.RedisService;
 import com.winestore.winestore.service.UserDetailServiceImpl;
 import com.winestore.winestore.service.UserService;
 import com.winestore.winestore.util.JwtUtil;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
@@ -112,32 +117,73 @@ public String sendEmail(){
 
 
 
-@PostMapping("/login")
-public ResponseEntity<?> login(@RequestBody UserRequestDTO userDto){
-    try {
-        authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(userDto.getEmail(),userDto.getPassword())
-        );
-        User user=userService.findByEmailAndAuthProvider(userDto.getEmail(),"none").orElseThrow(()->new IllegalArgumentException("User not Found"));
+    @PostMapping("/login")
+    public ResponseEntity<?> login(@RequestBody UserRequestDTO userDto, HttpServletResponse response) {
+        try {
+            // 1. Authenticate
+            authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(userDto.getEmail(), userDto.getPassword())
+            );
 
-        UserDetails userDetails=userDetailService.loadUserByUsername(user.getEmail());
-        String jwt=jwtUtil.generateToken(user);
-        System.out.println("jwt token is---"+jwt);
-        return ResponseEntity.ok(new LoginResponseDTO(jwt,new UserResponseDTO(user)));
-    }catch (Exception e){
-        return new ResponseEntity<>("Incorrect username or password", HttpStatus.BAD_REQUEST);
+            // 2. Find user
+            User user = userService.findByEmailAndAuthProvider(userDto.getEmail(), "none")
+                    .orElseThrow(() -> new IllegalArgumentException("User not Found"));
+
+            // 3. Load user details & generate token
+            UserDetails userDetails = userDetailService.loadUserByUsername(user.getEmail());
+            String jwt = jwtUtil.generateToken(user);
+
+            // 4. Create HttpOnly cookie
+            ResponseCookie cookie = ResponseCookie.from("jwt", jwt)
+                    .httpOnly(true)          // not accessible via JS
+                    //.secure(true)            // only over HTTPS (use false for local dev if needed)
+                    .path("/")               // available for all endpoints
+                    .maxAge(72 * 60 * 60)    // 1 day
+                  //  .sameSite("Strict")      // CSRF protection
+                    .build();
+
+            // 5. Add cookie to response
+            response.addHeader("Set-Cookie", cookie.toString());
+
+            // 6. Return user info (without JWT in body anymore)
+            return ResponseEntity.ok(new UserResponseDTO(user));
+
+        } catch (Exception e) {
+            return new ResponseEntity<>("Incorrect username or password", HttpStatus.BAD_REQUEST);
+        }
     }
-}
+
 
 @GetMapping
     public List<UserResponseDTO> getUser(){
     return userService.getUser();
 }
 
-//@GetMapping("{name}")
-//    public Optional<Product> getProductByName(@PathVariable String name){
-//    return categoryService.getProductByName(name);
-//}
+
+    @GetMapping("/me")
+    public ResponseEntity<?> getCurrentUser(HttpServletRequest request) {
+        // JwtFilter already sets SecurityContext
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        if (principal instanceof UserDetails userDetails) {
+            User user = userService.findByEmailAndAuthProvider(userDetails.getUsername(), "none")
+                    .orElseThrow(() -> new IllegalArgumentException("User not found"));
+            return ResponseEntity.ok(new UserResponseDTO(user));
+        }
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Not logged in");
+    }
+    @PostMapping("/logout")
+    public ResponseEntity<?> logout(HttpServletResponse response) {
+        Cookie cookie = new Cookie("jwt", null);
+        cookie.setHttpOnly(true);
+//        cookie.setSecure(true); // if using HTTPS
+        cookie.setPath("/");
+        cookie.setMaxAge(0); // expire immediately
+        response.addCookie(cookie);
+
+        return ResponseEntity.ok("Logged out successfully");
+    }
+
+
 
 
 

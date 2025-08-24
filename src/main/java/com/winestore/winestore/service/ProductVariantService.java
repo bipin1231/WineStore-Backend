@@ -55,7 +55,7 @@ public class ProductVariantService {
                 newVariant.setSellingPrice(variant.getSellingPrice());
                 newVariant.setCartoonCostPrice(variant.getCartoonCostPrice());
                 newVariant.setCartoonSellingPrice(variant.getCartoonSellingPrice());
-
+                newVariant.setStock(variant.getStock());
                 List<String> imageUrls = imageService.addMultipleImage(variant.getImageUrl());
 
                 newVariant.setImageUrl(imageUrls);
@@ -78,10 +78,10 @@ public class ProductVariantService {
 
 
             ProductVariant oldProductVariant = productVariantRepo.findById(variant.getId()).orElseThrow(()-> new IllegalArgumentException("Invalid product size id"));
-            if(variant.getSizeId()!=null){
-                Size size=sizeRepo.findById(variant.getId()).orElseThrow(()->new IllegalArgumentException("invalid size id"));
-                oldProductVariant.setSize(size);
-            }
+//            if(variant.getSizeId()!=null){
+//                Size size=sizeRepo.findById(variant.getId()).orElseThrow(()->new IllegalArgumentException("invalid size id"));
+//                oldProductVariant.setSize(size);
+//            }
 
             if(variant.getStock()!=null) oldProductVariant.setStock(variant.getStock());
             if(variant.getSellingPrice()!=null) oldProductVariant.setSellingPrice(variant.getSellingPrice());

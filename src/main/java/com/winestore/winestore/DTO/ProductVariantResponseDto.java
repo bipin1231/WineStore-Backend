@@ -15,6 +15,7 @@ public class ProductVariantResponseDto {
     private Double cartoonCostPrice;
     private Double cartoonSellingPrice;
     private List<String> imageUrl;
+    private Long productSizeId;
     private String size;
 
     public ProductVariantResponseDto(ProductVariant productVariant){
@@ -22,6 +23,7 @@ public class ProductVariantResponseDto {
         this.stock= productVariant.getStock();
         this.sellingPrice=productVariant.getSellingPrice();
         this.costPrice=productVariant.getCostPrice();
+        this.productSizeId=productVariant.getSize().getId();
         this.size=productVariant.getSize().getSize();
         this.cartoonCostPrice=productVariant.getCartoonCostPrice();
         this.cartoonSellingPrice=productVariant.getCartoonSellingPrice();
