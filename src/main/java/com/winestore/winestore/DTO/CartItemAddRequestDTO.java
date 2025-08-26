@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 public class CartItemAddRequestDTO {
     Long userId;
     Long productId;
-    int quantity;
+    Integer quantity;
     Long productVariantId;
 
 

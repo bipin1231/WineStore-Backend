@@ -19,6 +19,6 @@ public class CartItemDTO {
             this.size=cartItem.getProductVariant().getSize().getSize();
             this.productPrice=cartItem.getProductVariant().getSellingPrice();
             this.totalPrice=quantity*productPrice;
-            this.url=cartItem.getProduct().getImageUrl().get(0);
+            this.url=cartItem.getProductVariant().getImageUrl().get(0);
         }
 }

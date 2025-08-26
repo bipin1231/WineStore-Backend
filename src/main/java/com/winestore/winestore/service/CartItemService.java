@@ -58,7 +58,7 @@ public void addItemToCart(Cart cart, CartItemAddRequestDTO dto) {
     Optional<ProductVariant> sizeOpt = productVariantRepo.findById(dto.getProductVariantId());
 
     if (sizeOpt.isEmpty()) {
-        throw new RuntimeException("Product size not found");
+        throw new RuntimeException("Product Variant not found");
     }
 
     Optional<Product> productOpt = productRepo.findById(dto.getProductId());
@@ -71,17 +71,24 @@ public void addItemToCart(Cart cart, CartItemAddRequestDTO dto) {
 
     Optional<CartItem> cartItemOpt=cartItemRepo.findByCartAndProductAndProductVariant(cart,product, productVariant);
 
-    if(cartItemOpt.isPresent())  throw new RuntimeException("Product is already in cart");
+    if(cartItemOpt.isPresent()) {
+        CartItem cartItem=cartItemOpt.get();
+        cartItem.setQuantity(dto.getQuantity());
+        cartItem.setTotalPrice(dto.getQuantity() * productVariant.getSellingPrice());
+        cartItemRepo.save(cartItem);
+    }else {
+        CartItem cartItem = new CartItem();
+        cartItem.setCart(cart);
+        cartItem.setProduct(product);
+        cartItem.setQuantity(dto.getQuantity());
+        cartItem.setProductVariant(productVariant);
+        cartItem.setTotalPrice(dto.getQuantity() * productVariant.getSellingPrice());
+
+        cartItemRepo.save(cartItem);
+    }
 
 
-    CartItem cartItem = new CartItem();
-    cartItem.setCart(cart);
-    cartItem.setProduct(product);
-    cartItem.setQuantity(dto.getQuantity());
-    cartItem.setProductVariant(productVariant);
-    cartItem.setTotalPrice(dto.getQuantity() * productVariant.getSellingPrice());
 
-    cartItemRepo.save(cartItem);
 }
 
     public void updateCartItem(Long cartItemId, int quantity){

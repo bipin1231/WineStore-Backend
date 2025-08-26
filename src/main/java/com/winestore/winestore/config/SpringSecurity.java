@@ -45,14 +45,12 @@ public class SpringSecurity {
         http
                 .csrf(AbstractHttpConfigurer::disable) // Disable CSRF for simplicity
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/register", "/login","/user/**","/category/**","/product/**").permitAll()
-//                        .requestMatchers("/admin/**").hasRole("ADMIN")
-//                        .requestMatchers().hasAnyRole("USER", "ADMIN")
-                                .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-                               //   .requestMatchers("").authenticated()
-                                //      .requestMatchers("/order").authenticated()
-                                // .requestMatchers("/user").hasRole("admin")
+                            .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll() // Allow preflight first
+                                .requestMatchers("/register", "/login", "/user/**","/category/**","/product/**").permitAll()
+                                .requestMatchers("/cart", "/cart/**", "/order").authenticated()
                                 .anyRequest().permitAll()
+//                        .requestMatchers("/cart/**").hasAnyRole("USER", "ADMIN","user","admin")
+//                                .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
 
                 )
 

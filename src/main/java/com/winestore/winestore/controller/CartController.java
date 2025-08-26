@@ -17,7 +17,6 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-
 @RestController
 @RequestMapping("/cart")
 public class CartController {
@@ -61,7 +60,8 @@ public class CartController {
     public List<CartItemDTO> getCartById(@PathVariable Long id){
         return cartService.getCartItemByUserId(id);
     }
-    
+
+
     @GetMapping
     public List<CartDTO> getAllCart(){
         return cartService.getAllCart();

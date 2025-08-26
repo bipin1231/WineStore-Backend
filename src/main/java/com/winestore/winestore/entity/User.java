@@ -34,4 +34,7 @@ public class User {
      @OneToMany(mappedBy = "user")
      private List<Order> order;
 
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL) // ✅ Correct way
+    private UserDeliveryInfo userDeliveryInfo;
+
 }
