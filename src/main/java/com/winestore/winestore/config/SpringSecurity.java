@@ -44,23 +44,24 @@ public class SpringSecurity {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(AbstractHttpConfigurer::disable) // Disable CSRF for simplicity
+                .cors(Customizer.withDefaults())       //  enable cors support
                 .authorizeHttpRequests(auth -> auth
                             .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll() // Allow preflight first
                                 .requestMatchers("/register", "/login", "/user/**","/category/**","/product/**").permitAll()
-                                .requestMatchers("/cart", "/cart/**", "/order").authenticated()
+                                .requestMatchers("/cart", "/cart/**", "/order","/order/**").authenticated()
                                 .anyRequest().permitAll()
 //                        .requestMatchers("/cart/**").hasAnyRole("USER", "ADMIN","user","admin")
 //                                .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
 
                 )
-
+                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
                 .oauth2Login(oauth2 -> oauth2
                         .userInfoEndpoint(userInfo -> userInfo
                                 .userService(customOAuth2UserService)
                         )
                         .successHandler(oAuth2SuccessHandler)
-                )
-                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
+                );
+
 //                .formLogin(form -> form
 //                                .loginPage("/login"));
               //          .formLogin(Customizer.withDefaults()); // Default login form

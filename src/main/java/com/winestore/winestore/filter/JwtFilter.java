@@ -54,19 +54,28 @@ public class JwtFilter extends OncePerRequestFilter {
             }
         }
 
-        // 3. Validate token if found
-        if (jwt != null && jwtUtil.validateToken(jwt)) {
-            username = jwtUtil.extractAllClaims(jwt).get("email", String.class);
-            provider = jwtUtil.extractAllClaims(jwt).get("authProvider", String.class);
+        // 3. If we found a token and no authentication exists yet
+        if (jwt != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+            try {
+                var claims = jwtUtil.extractAllClaims(jwt);
+                username = claims.get("email", String.class);
+                provider = claims.get("authProvider", String.class);
 
-            UserDetails userDetails = getUserDetails(username, provider);
-            if (userDetails != null) {
-                setAuthentication(userDetails, request);
+                if (jwtUtil.validateToken(jwt)) {
+                    UserDetails userDetails = getUserDetails(username, provider);
+                    if (userDetails != null) {
+                        setAuthentication(userDetails, request);
+                    }
+                }
+            } catch (Exception e) {
+                // Invalid JWT → let it pass, Spring Security will handle unauthorized
+                logger.warn("JWT validation failed: {}", e);
             }
         }
 
         chain.doFilter(request, response);
     }
+
 
     private UserDetails getUserDetails(String email, String provider) {
         if ("none".equals(provider)) {

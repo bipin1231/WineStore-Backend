@@ -50,23 +50,7 @@ private RedisService redisService;
 @Autowired
 private JavaMailSender javaMailSender;
 
-@GetMapping("/send-email")
-public String sendEmail(){
-    try{
-        SimpleMailMessage message = new SimpleMailMessage();
-        message.setFrom("bipinadhikari234.com");
-        message.setTo("moviespedia234@gmail.com");
-        message.setSubject("Hey whats up");
-        message.setText("thats awesome");
 
-        javaMailSender.send(message);
-    return "success";
-    }catch (Exception e){
-        return e.getMessage();
-
-    }
-
-}
 
     @PostMapping("/signup")
     public ResponseEntity<Map<String, String>> signup(@RequestBody UserRequestDTO request)throws JsonProcessingException {

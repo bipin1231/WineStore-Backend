@@ -1,10 +1,12 @@
 package com.winestore.winestore.controller;
 
+import com.winestore.winestore.ApiResponse.ApiResponse;
 import com.winestore.winestore.DTO.OrderDTO;
-import com.winestore.winestore.DTO.PlaceOrderRequestDto;
+import com.winestore.winestore.DTO.order.PlaceOrderAddDTO;
 import com.winestore.winestore.service.CartItemService;
 import com.winestore.winestore.service.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -20,17 +22,14 @@ public class OrderController {
     private CartItemService cartItemService;
 
     @PostMapping("/place-directly")
-    public String placeOrder(@RequestBody PlaceOrderRequestDto dto){
-
-        try {
-            orderService.placeOrder(dto);
-        }catch (Exception e){
-            return "Errorrr"+e;
-        }
+    public ResponseEntity<ApiResponse<OrderDTO>> placeOrder(@RequestBody PlaceOrderAddDTO dto){
 
 
+            OrderDTO saved=orderService.placeOrder(dto);
 
-        return "Order placed successfully";
+        return ResponseEntity.ok(
+                new ApiResponse<>(true, "Delivery info saved successfully", saved)
+        );
     }
     @PostMapping("/place-cart-order")
     public void placeCartOrder(@RequestParam Long userId){
@@ -51,8 +50,12 @@ public class OrderController {
 //
 //    }
     @GetMapping
-    public List<OrderDTO> getOrder(){
-        return orderService.getAllOrder();
+    public ResponseEntity<ApiResponse<List<OrderDTO>>> getOrder(){
+        List<OrderDTO> data= orderService.getAllOrder();
+        return ResponseEntity.ok(
+                new ApiResponse<>(true, "Order Placed Successfully", data)
+        );
+
     }
 
 
