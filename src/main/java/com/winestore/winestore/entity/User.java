@@ -44,6 +44,8 @@ public class User {
     @UpdateTimestamp
     private LocalDateTime updatedAt;
 
+    private String imageUrl;
+
 //    @Enumerated(EnumType.STRING)
 //    private AuthProvider authProvider;
 

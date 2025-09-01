@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -102,14 +103,16 @@ public class OrderService {
                 .product(product)
                 .productVariant(productVariant)
                 .quantity(quantity)
+                .totalPrice(productVariant.getSellingPrice()*quantity)
                 .build();
 
         // Create Order using Builder
         Order order = Order.builder()
                 .user(user)
                 .orderItem(List.of(orderItem))
-                .totalPrice(productVariant.getSellingPrice() * quantity)
+                .totalPrice(productVariant.getSellingPrice() * quantity + placeOrder.getDeliveryCharges())
                 .paymentType(placeOrder.getPaymentType())
+                .orderStatus("processing")
                 .build();
 
         // Set reverse relation
@@ -128,9 +131,19 @@ public class OrderService {
 
     }
 
+    public OrderDTO updateOrderStatus(Long id,String orderStatus){
+        Order order= orderRepo.findById(id).orElseThrow(()->new RuntimeException("order not found"));
+        order.setOrderStatus(orderStatus);
+      Order newOrder=  orderRepo.save(order);
+        return new OrderDTO(newOrder);
 
-    public Optional<Order> getCartById(Long id){
-        return orderRepo.findByUserId(id);
+    }
+
+
+    public List<OrderDTO> getOrderByUserId(Long id){
+        return orderRepo.findByUserId(id).stream().
+                map(OrderDTO::new).
+                collect(Collectors.toList());
     }
 
   //  @PreAuthorize("hasRole('ADMIN')")

@@ -49,11 +49,29 @@ public class OrderController {
 //        return "cart item deleted successfully";
 //
 //    }
+@GetMapping("/{id}")
+public ResponseEntity<ApiResponse<?>> getOrderById(@PathVariable Long id){
+   List<OrderDTO> data= orderService.getOrderByUserId(id);
+    return ResponseEntity.ok(
+            new ApiResponse<>(true, "Order Fetched Successfully", data)
+    );
+
+}
     @GetMapping
     public ResponseEntity<ApiResponse<List<OrderDTO>>> getOrder(){
         List<OrderDTO> data= orderService.getAllOrder();
         return ResponseEntity.ok(
-                new ApiResponse<>(true, "Order Placed Successfully", data)
+                new ApiResponse<>(true, "Order Fetched Successfully", data)
+        );
+
+    }
+    @PutMapping("/{id}")
+    public ResponseEntity<ApiResponse<?>> updateOrderStatus(@PathVariable Long id,
+                                                             @RequestParam String orderStatus
+                                                            ){
+        OrderDTO data= orderService.updateOrderStatus(id,orderStatus);
+        return ResponseEntity.ok(
+                new ApiResponse<>(true, "Order Updated Successfully", data)
         );
 
     }

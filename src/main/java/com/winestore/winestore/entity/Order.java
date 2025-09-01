@@ -26,8 +26,10 @@ public class Order {
     @CreationTimestamp
     @Column(updatable = false)
     private LocalDateTime orderDate;
+
     private String paymentType;
     private String paymentStatus;
+    private String orderStatus;
     @ManyToOne
     @JoinColumn(name="user_id")
     private User user;

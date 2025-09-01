@@ -8,6 +8,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.security.oauth2.core.user.OAuth2User;
@@ -24,6 +25,7 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
     private final JwtUtil jwtUtil;
 
     @Autowired
+    @Lazy
     private UserService userService;
 
     public OAuth2SuccessHandler(JwtUtil jwtUtil) {
@@ -41,7 +43,7 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
         if (authentication instanceof OAuth2AuthenticationToken oauthToken) {
             provider = oauthToken.getAuthorizedClientRegistrationId();
         }
-        User user=userService.findByEmailAndAuthProvider(email,provider).orElseThrow(()->new IllegalArgumentException("user not found"));
+        User user=userService.findByEmailAndAuthProvider(email,provider);
 
         String token = jwtUtil.generateToken(user);
         System.out.println(token);

@@ -19,6 +19,8 @@ public class OrderItem {
 
     private int quantity;
 
+    private Double totalPrice;
+
     @ManyToOne
     @JoinColumn(name = "product_id")
     private Product product;
