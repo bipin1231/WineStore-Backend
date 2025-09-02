@@ -27,6 +27,9 @@ public class Product {
 @ElementCollection
  private List<String> imageUrl;
 
+private String alcohol;
+
+
 
  @OneToMany(mappedBy = "product")
  private List<CartItem> cartItem;

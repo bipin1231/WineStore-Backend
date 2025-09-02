@@ -15,18 +15,26 @@ public class UserDetailServiceImpl implements UserDetailsService {
     @Autowired
     private UserRepo userRepo;
 
-    @Override
-    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        //Long id= Long.parseLong(userId);
-        Optional<User> user = userRepo.findByEmailAndAuthProvider(email,"none");
-        if (user.isPresent()) {
-            return org.springframework.security.core.userdetails.User.builder()
+//    @Override
+//    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+//        //Long id= Long.parseLong(userId);
+//        Optional<User> user = userRepo.findByEmailAndAuthProvider(email,"none");
+//        if (user.isPresent()) {
+//            return org.springframework.security.core.userdetails.User.builder()
+//
+//                    .username(user.get().getEmail())
+//                    .password(user.get().getPassword())
+//                    .roles(user.get().getRoles())
+//
+//                    .build();
+//        }
+//        throw new UsernameNotFoundException("User not found");
+//    }
+@Override
+public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+    User user= userRepo.findByEmailAndAuthProvider(email, "none")
+            .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+    return new CustomOAuth2UserDetails(user,null);
+}
 
-                    .username(user.get().getEmail())
-                    .password(user.get().getPassword())
-                    .roles(user.get().getRoles())
-                    .build();
-        }
-        throw new UsernameNotFoundException("User not found");
-    }
 }

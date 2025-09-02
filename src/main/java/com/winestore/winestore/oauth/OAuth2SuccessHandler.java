@@ -9,6 +9,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.http.ResponseCookie;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.security.oauth2.core.user.OAuth2User;
@@ -46,16 +47,18 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
         User user=userService.findByEmailAndAuthProvider(email,provider);
 
         String token = jwtUtil.generateToken(user);
-        System.out.println(token);
-        ObjectMapper mapper=new ObjectMapper();
-        Map<String, String> jsonMap = new HashMap<>();
-        jsonMap.put("token", token);
 
-        response.setContentType("application/json");
-        response.setCharacterEncoding("UTF-8");
-        mapper.writeValue(response.getWriter(), jsonMap);
+        // 4. Create HttpOnly cookie
+        ResponseCookie cookie = ResponseCookie.from("jwt", token)
+                .httpOnly(true)
+                .path("/")
+                .maxAge(72 * 60 * 60)
+                .build();
+        response.addHeader("Set-Cookie", cookie.toString());
+
+
 
         // Redirect to frontend with token
-        //response.sendRedirect("http://localhost:3000/login-success?token=" + token);
+        response.sendRedirect("http://localhost:5173");
     }
 }

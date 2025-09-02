@@ -1,6 +1,9 @@
 package com.winestore.winestore.filter;
 
+import com.winestore.winestore.entity.User;
 import com.winestore.winestore.repository.UserRepo;
+
+import com.winestore.winestore.service.CustomOAuth2UserDetails;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
@@ -12,11 +15,13 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.Optional;
 
 @Component
 public class JwtFilter extends OncePerRequestFilter {
@@ -29,6 +34,9 @@ public class JwtFilter extends OncePerRequestFilter {
 
     @Autowired
     private JwtUtil jwtUtil;
+
+//    @Autowired
+//    private CustomUserDetails customUserDetails;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request,
@@ -76,22 +84,32 @@ public class JwtFilter extends OncePerRequestFilter {
         chain.doFilter(request, response);
     }
 
-
     private UserDetails getUserDetails(String email, String provider) {
-        if ("none".equals(provider)) {
-            // Normal login
-            return userDetailsService.loadUserByUsername(email);
-        } else {
-            // OAuth login
-            return userRepo.findByEmailAndAuthProvider(email, provider)
-                    .map(user -> org.springframework.security.core.userdetails.User.builder()
-                            .username(user.getEmail())
-                            .password("")
-                            .roles(user.getRoles())
-                            .build())
-                    .orElse(null);
-        }
+
+
+        Optional<User> user= userRepo.findByEmailAndAuthProvider(email, provider);
+        return user.map(value -> new CustomOAuth2UserDetails(value, null)).orElse(null);
+
+
+
     }
+
+
+//    private UserDetails getUserDetails(String email, String provider) {
+//        if ("none".equals(provider)) {
+//            // Normal login
+//            return userDetailsService.loadUserByUsername(email);
+//        } else {
+//            // OAuth login
+//            return userRepo.findByEmailAndAuthProvider(email, provider)
+//                    .map(user -> org.springframework.security.core.userdetails.User.builder()
+//                            .username(user.getEmail())
+//                            .password("")
+//                            .roles(user.getRoles())
+//                            .build())
+//                    .orElse(null);
+//        }
+//    }
 
     private void setAuthentication(UserDetails userDetails, HttpServletRequest request) {
         UsernamePasswordAuthenticationToken auth =

@@ -20,6 +20,8 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
 import java.util.Map;
@@ -29,6 +31,7 @@ import java.util.stream.Collectors;
 
 @Service
 public class UserService {
+    private static final Logger logger = LoggerFactory.getLogger(UserService.class);
     @Autowired
     private UserRepo userRepo;
     @Autowired
@@ -140,12 +143,21 @@ public class UserService {
 
     // ---------------------- CURRENT USER ----------------------
     public UserResponseDTO getCurrentUser() {
-        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        if (principal instanceof UserDetails userDetails) {
-            User user = findByEmailAndAuthProvider(userDetails.getUsername(), "none");
-            return new UserResponseDTO(user);
-        }
-        throw new RuntimeException("Not logged in");
+//        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+//        logger.info("Current principal: {}", principal);
+//
+//        if (principal instanceof UserDetails userDetails) {
+//            User user = findByEmailAndAuthProvider(userDetails.getUsername(), "none");
+//            return new UserResponseDTO(user);
+//        }
+//        throw new RuntimeException("Not logged in");
+        CustomOAuth2UserDetails userDetails = (CustomOAuth2UserDetails) SecurityContextHolder
+                .getContext()
+                .getAuthentication()
+                .getPrincipal();
+
+        User user = userDetails.getUser();
+        return new UserResponseDTO(user);
     }
 
     // ---------------------- LOGOUT ----------------------
