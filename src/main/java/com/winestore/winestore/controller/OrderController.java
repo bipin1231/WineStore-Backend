@@ -65,6 +65,17 @@ public ResponseEntity<ApiResponse<?>> getOrderById(@PathVariable Long id){
         );
 
     }
+    @PutMapping("payment/{id}")
+    public ResponseEntity<ApiResponse<?>> updatePaymentStatus(@PathVariable Long id,
+                                                            @RequestParam String paymentType,
+                                                              @RequestParam String paymentStatus
+    ){
+        OrderDTO data= orderService.updatePaymentStatus(id,paymentType,paymentStatus);
+        return ResponseEntity.ok(
+                new ApiResponse<>(true, "Order Updated Successfully", data)
+        );
+
+    }
     @PutMapping("/{id}")
     public ResponseEntity<ApiResponse<?>> updateOrderStatus(@PathVariable Long id,
                                                              @RequestParam String orderStatus

@@ -131,6 +131,16 @@ public class OrderService {
 
     }
 
+    public OrderDTO updatePaymentStatus(Long id,String paymentType,String paymentStatus){
+        Order order= orderRepo.findById(id).orElseThrow(()->new RuntimeException("order not found"));
+        order.setPaymentType(paymentType);
+        order.setPaymentStatus(paymentStatus);
+        Order newOrder=  orderRepo.save(order);
+        return new OrderDTO(newOrder);
+
+    }
+
+
     public OrderDTO updateOrderStatus(Long id,String orderStatus){
         Order order= orderRepo.findById(id).orElseThrow(()->new RuntimeException("order not found"));
         order.setOrderStatus(orderStatus);
@@ -138,7 +148,6 @@ public class OrderService {
         return new OrderDTO(newOrder);
 
     }
-
 
     public List<OrderDTO> getOrderByUserId(Long id){
         return orderRepo.findByUserId(id).stream().
