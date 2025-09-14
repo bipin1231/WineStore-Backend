@@ -59,7 +59,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
                     .lastName(lastName)
                     .imageUrl(imageUrl)
                     .authProvider(provider)
-                    .roles("user")
+                    .roles("USER")
                     .build();
         }
         userRepo.save(user);

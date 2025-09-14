@@ -33,19 +33,21 @@ public class SizeService {
         sizeRepo.save(size);
 
     }
-    public void updateSize(SizeResponseDTO dto){
+    public void updateSize(List<SizeUpdateDTO> dtoList) {
+        dtoList.forEach(dto -> {
+            Optional<Size> sizeOpt = sizeRepo.findById(dto.getId());
+            if (sizeOpt.isEmpty()) {
+                throw new IllegalArgumentException("Size doesn't exist");
+            }
 
-        Optional<Size> sizeOpt=sizeRepo.findBySize(dto.getSize());
-        if(!sizeOpt.isPresent()){
-            throw new IllegalArgumentException("size doesnt exits");
-        }
-        Size size=new Size();
+            Size size = sizeOpt.get(); // use existing entity
+            size.setSize(dto.getSize());
+            size.setBottleInCartoon(dto.getBottleInCartoon());
 
-        size.setSize(dto.getSize());
-        size.setBottleInCartoon(dto.getBottleInCartoon());
-        sizeRepo.save(size);
-
+            sizeRepo.save(size); // updates the entity
+        });
     }
+
 
     public List<SizeResponseDTO> getAllSize(){
         return sizeRepo.findAll().stream().map(SizeResponseDTO::new).toList();

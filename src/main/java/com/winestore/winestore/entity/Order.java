@@ -1,5 +1,6 @@
 package com.winestore.winestore.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -26,6 +27,8 @@ public class Order {
     @CreationTimestamp
     @Column(updatable = false)
     private LocalDateTime orderDate;
+    @Column(unique = true, updatable = false)
+    private String orderNumber;
 
     private String paymentType;
     private String paymentStatus;

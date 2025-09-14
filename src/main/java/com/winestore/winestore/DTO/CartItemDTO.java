@@ -6,19 +6,21 @@ import lombok.Data;
 @Data
 public class CartItemDTO {
         private Long cartItemId;
-        private String productName;
+    private Long productVariantId;
+        private String name;
         private int quantity;
         private double totalPrice;
-    private double productPrice;
+    private double sellingPrice;
         private String size;
-        private String url;
+        private String imageUrl;
         public CartItemDTO(CartItem cartItem) {
             this.cartItemId = cartItem.getId();
-            this.productName = cartItem.getProduct().getName();
+            this.name = cartItem.getProduct().getName();
             this.quantity = cartItem.getQuantity();
             this.size=cartItem.getProductVariant().getSize().getSize();
-            this.productPrice=cartItem.getProductVariant().getSellingPrice();
-            this.totalPrice=quantity*productPrice;
-            this.url=cartItem.getProductVariant().getImageUrl().get(0);
+            this.sellingPrice =cartItem.getProductVariant().getSellingPrice();
+            this.totalPrice=quantity* sellingPrice;
+            this.imageUrl=cartItem.getProductVariant().getImageUrl().get(0);
+            this.productVariantId=cartItem.getProductVariant().getId();
         }
 }
