@@ -28,11 +28,14 @@ public class Order {
     @Column(updatable = false)
     private LocalDateTime orderDate;
     @Column(unique = true, updatable = false)
+    private Double deliveryCharge;
     private String orderNumber;
-
     private String paymentType;
     private String paymentStatus;
     private String orderStatus;
+    private String transactionId;
+    private String orderStatusFromAdmin;
+
     @ManyToOne
     @JoinColumn(name="user_id")
     private User user;

@@ -1,9 +1,15 @@
 package com.winestore.winestore.service.payment;
 
 
+import com.winestore.winestore.entity.Order;
+import com.winestore.winestore.repository.OrderRepo;
 import com.winestore.winestore.util.ESewaSignatureUtil;
+import jakarta.transaction.Transactional;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -22,8 +28,20 @@ public class PaymentService {
     @Value("${esewa.sandboxUrl}")
     private String esewaUrl;
 
-    public Map<String, String> createPaymentRequest(String orderNumber, double amount) throws Exception {
+    @Value("${esewa.verifyUrl}")
+    private String verifyUrl;
+
+    @Autowired
+    private OrderRepo orderRepo;
+
+    private final RestTemplate restTemplate = new RestTemplate();
+
+    @Transactional
+    public Map<String, String> esewaCreatePaymentRequest(String orderNumber, double amount) throws Exception {
         String transactionId = orderNumber + (int)(Math.random() * 1000);
+        Order order=orderRepo.findByOrderNumber(orderNumber).orElseThrow(()->new RuntimeException("Order Dosent exits"));
+        order.setTransactionId(transactionId);
+        order.setPaymentStatus("pending");
 
         Map<String, String> params = new HashMap<>();
         params.put("amount", String.valueOf(amount));
@@ -49,4 +67,29 @@ public class PaymentService {
         params.put("esewaUrl", esewaUrl);
         return params;
     }
+    public boolean verifyTransaction(String transactionUuid, Double amount, String productCode) {
+        String url = verifyUrl +
+                "?product_code=" + productCode +
+                "&total_amount=" + amount +
+                "&transaction_uuid=" + transactionUuid;
+
+        ResponseEntity<String> response = restTemplate.getForEntity(url, String.class);
+
+        if (response.getBody() != null && response.getBody().contains("\"status\":\"COMPLETE\"")) {
+            // Update DB
+            orderRepo.findByTransactionId(transactionUuid).ifPresent(tx -> {
+                tx.setPaymentStatus("PAID");
+                tx.setPaymentType("esewa");
+                orderRepo.save(tx);
+            });
+            return true;
+        } else {
+            orderRepo.findByTransactionId(transactionUuid).ifPresent(tx -> {
+                tx.setPaymentStatus("UNPAID");
+                orderRepo.save(tx);
+            });
+            return false;
+        }
+    }
+
 }

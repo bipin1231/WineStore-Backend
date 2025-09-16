@@ -10,7 +10,8 @@ public class OrderItemDTO {
     private String productName;
     private int quantity;
     private Long productVariantId;
-    private Double price;
+    private Double sellingPrice;
+    private String size;
 
 
     public OrderItemDTO(OrderItem orderItem) {
@@ -18,7 +19,8 @@ public class OrderItemDTO {
         this.productName = orderItem.getProduct().getName();
         this.quantity = orderItem.getQuantity();
         this.productVariantId=orderItem.getProductVariant().getId();
-        this.price=orderItem.getProductVariant().getSellingPrice();
+        this.sellingPrice=orderItem.getProductVariant().getSellingPrice();
+        this.size=orderItem.getProductVariant().getSize().getSize();
     }
 
 }

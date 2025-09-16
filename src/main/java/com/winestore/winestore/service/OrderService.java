@@ -49,6 +49,11 @@ public class OrderService {
         return "ORD" + datePart + timePart;
     }
 
+    public Double calculateDeliveryCharges(Double total){
+        return (double) (total>=1000?0:100);
+    }
+
+
     @Transactional
     public OrderDTO placeCartOrder(Long userId){
         User user = userRepo.findById(userId).orElseThrow(()->new RuntimeException("User Doesn't Exists"));
@@ -78,9 +83,10 @@ public class OrderService {
 
         }
 
-        order.setTotalPrice(total);
+        order.setTotalPrice(total+calculateDeliveryCharges(total));
         order.setOrderItem(orderItem);
         order.setOrderNumber(GenerateOrderNumber());
+     //   order.setDeliveryCharge(calculateDeliveryCharges(total));
 
         //save order
 
@@ -119,22 +125,22 @@ return new OrderDTO(order);
                 .totalPrice(productVariant.getSellingPrice()*quantity)
                 .build();
 
-        // Generate order number using current timestamp
-        String datePart = LocalDate.now().format(DateTimeFormatter.BASIC_ISO_DATE);
-        String timePart = String.valueOf(System.currentTimeMillis()); // unique enough
+        double subTotal=productVariant.getSellingPrice() * quantity;
 
         // Create Order using Builder
         Order order = Order.builder()
                 .user(user)
                 .orderItem(new ArrayList<>(List.of(orderItem)))
-                .totalPrice(productVariant.getSellingPrice() * quantity + placeOrder.getDeliveryCharges())
+                .totalPrice(subTotal+calculateDeliveryCharges(subTotal))
                 .paymentType(placeOrder.getPaymentType())
                 .orderNumber(GenerateOrderNumber())
                 .orderStatus("processing")
+               // .deliveryCharge(calculateDeliveryCharges(subTotal))
                 .build();
 
         // Set reverse relation
         orderItem.setOrder(order);
+
 
         // Save order (cascades to orderItem)
      Order savedOrder = orderRepo.save(order);
@@ -162,7 +168,7 @@ return new OrderDTO(order);
     }
 
     public List<OrderDTO> getOrderByUserId(Long id){
-        return orderRepo.findByUserId(id).stream().
+        return orderRepo.findByUserIdOrderByOrderDateDesc(id).stream().
                 map(OrderDTO::new).
                 collect(Collectors.toList());
     }

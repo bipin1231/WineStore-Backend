@@ -53,15 +53,18 @@ public interface ProductRepo extends JpaRepository<Product,Long> {
 //    List<Product> searchByQuery(@Param("query") String query);
 
     @Query("""
-            SELECT ps FROM ProductVariant ps
-            JOIN ps.product p
-            JOIN p.category c
-            WHERE LOWER(p.name) LIKE LOWER(CONCAT('%', :query, '%')) 
-            OR LOWER(c.name) LIKE LOWER(CONCAT('%', :query, '%'))
-            """)
+    SELECT ps FROM ProductVariant ps
+    JOIN ps.product p
+    JOIN p.category c
+    LEFT JOIN c.parent parent
+    WHERE LOWER(p.name) LIKE LOWER(CONCAT('%', :query, '%'))
+       OR LOWER(c.name) LIKE LOWER(CONCAT('%', :query, '%'))
+       OR LOWER(parent.name) LIKE LOWER(CONCAT('%', :query, '%'))
+""")
     List<ProductVariant> searchByQuery(@Param("query") String query);
 
-    @Query("SELECT p FROM Product p LEFT JOIN p.category c " +
+
+    @Query("SELECT p FROM Product p JOIN p.category c " +
             "WHERE LOWER(c.name) = LOWER(:query) ")
     List<Product> filterByQuery(@Param("query") String query);
 
