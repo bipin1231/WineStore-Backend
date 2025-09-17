@@ -8,25 +8,23 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
-import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
-import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
-import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.Customizer;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
-import org.springframework.security.config.annotation.web.configurers.oauth2.client.OAuth2LoginConfigurer;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.access.AccessDeniedHandler;
+import org.springframework.security.web.AuthenticationEntryPoint;
 
+@EnableMethodSecurity
 @Configuration
-//@EnableWebSecurity
-//@EnableMethodSecurity // Enables @PreAuthorize and related annotations
 public class SpringSecurity {
-
 
     @Autowired
     private UserDetailServiceImpl userDetailsService;
@@ -43,45 +41,30 @@ public class SpringSecurity {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                .csrf(AbstractHttpConfigurer::disable) // Disable CSRF for simplicity
-                .cors(Customizer.withDefaults())       //  enable cors support
+                .csrf(AbstractHttpConfigurer::disable)
+                .cors(Customizer.withDefaults())
                 .authorizeHttpRequests(auth -> auth
-                            .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll() // Allow preflight first
-                                .requestMatchers("/register", "/login", "/user/**","/category/**","/product/**").permitAll()
-                                .requestMatchers("/cart", "/cart/**", "/order","/order/**").authenticated()
-                                .anyRequest().permitAll()
-//                        .requestMatchers("/cart/**").hasAnyRole("USER", "ADMIN","user","admin")
-//                                .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-
+                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                        .requestMatchers("/register", "/login", "/user/**").permitAll()
+                        // Do NOT permitAll for /category/** so @PreAuthorize works
+                        .requestMatchers("/cart/**", "/order/**").authenticated()
+//                        .requestMatchers("/category/**").hasRole("ADMIN")
+                        .anyRequest().permitAll()
                 )
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
                 .oauth2Login(oauth2 -> oauth2
-                        .userInfoEndpoint(userInfo -> userInfo
-                                .userService(customOAuth2UserService)
-                        )
+                        .userInfoEndpoint(userInfo -> userInfo.userService(customOAuth2UserService))
                         .successHandler(oAuth2SuccessHandler)
                 );
 
-//                .formLogin(form -> form
-//                                .loginPage("/login"));
-              //          .formLogin(Customizer.withDefaults()); // Default login form
-//                .logout(logout -> logout.permitAll());
 
         return http.build();
     }
 
-    //    @Autowired
-//    public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
-//        auth.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder());
-//    }
-//
     @Bean
     public AuthenticationManager authenticationManager(HttpSecurity http) throws Exception {
         AuthenticationManagerBuilder builder = http.getSharedObject(AuthenticationManagerBuilder.class);
-        builder
-                .userDetailsService(userDetailsService)
-                .passwordEncoder(passwordEncoder());
-
+        builder.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder());
         return builder.build();
     }
 
@@ -89,4 +72,25 @@ public class SpringSecurity {
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
+
+
+    @Bean
+    public AccessDeniedHandler accessDeniedHandler() {
+        return (request, response, accessDeniedException) -> {
+            response.setStatus(HttpStatus.FORBIDDEN.value()); // 403
+            response.setContentType("application/json");
+            response.getWriter().write("{\"success\":false,\"message\":\"Access Denied\"}");
+        };
+    }
+
+    @Bean
+    public AuthenticationEntryPoint authenticationEntryPoint() {
+        return (request, response, authException) -> {
+            response.setStatus(HttpStatus.UNAUTHORIZED.value()); // 401
+            response.setContentType("application/json");
+            response.getWriter().write("{\"success\":false,\"message\":\"Unauthorized\"}");
+        };
+    }
+
+
 }

@@ -1,5 +1,6 @@
 package com.winestore.winestore.controller;
 
+import com.winestore.winestore.ApiResponse.ApiResponse;
 import com.winestore.winestore.DTO.CartDTO;
 import com.winestore.winestore.DTO.CartItemAddRequestDTO;
 import com.winestore.winestore.DTO.CartItemDTO;
@@ -57,8 +58,11 @@ public class CartController {
 
     }
     @GetMapping("/{id}")
-    public List<CartItemDTO> getCartById(@PathVariable Long id){
-        return cartService.getCartItemByUserId(id);
+    public ResponseEntity<ApiResponse<?>> getCartById(@PathVariable Long id){
+
+        return ResponseEntity.ok(
+                new ApiResponse<>(true, "Cart fetched successfully", cartService.getCartItemByUserId(id))
+        );
     }
 
 

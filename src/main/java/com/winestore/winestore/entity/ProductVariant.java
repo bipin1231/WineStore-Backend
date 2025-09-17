@@ -22,6 +22,8 @@ public class ProductVariant {
  private Double costPrice;
 private Double cartoonCostPrice;
  private Double cartoonSellingPrice;
+ private Integer sold;
+ private Boolean bestSelling;
  @ElementCollection
  private List<String> imageUrl;
 

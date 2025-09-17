@@ -28,16 +28,18 @@ public class OrderController {
             OrderDTO saved=orderService.placeOrder(dto);
 
         return ResponseEntity.ok(
-                new ApiResponse<>(true, "Delivery info saved successfully", saved)
+                new ApiResponse<>(true, "Order placed successfully", saved)
         );
     }
     @PostMapping("/place-cart-order")
-    public void placeCartOrder(@RequestParam Long userId){
+    public ResponseEntity<ApiResponse<?>> placeCartOrder(@RequestParam Long userId){
 
-       //Order order= orderService.placeCartOrder(userId);
-      //  return new OrderDTO(order);
+       OrderDTO order= orderService.placeCartOrder(userId);
+        return ResponseEntity.ok(
+                new ApiResponse<>(true, "Order placed successfully", order)
+        );
     }
-//
+
 //    @DeleteMapping("/delete")
 //    public String removeCartItem(@RequestParam String username,
 //                                 @RequestParam String productName
@@ -62,6 +64,17 @@ public ResponseEntity<ApiResponse<?>> getOrderById(@PathVariable Long id){
         List<OrderDTO> data= orderService.getAllOrder();
         return ResponseEntity.ok(
                 new ApiResponse<>(true, "Order Fetched Successfully", data)
+        );
+
+    }
+    @PutMapping("payment/{id}")
+    public ResponseEntity<ApiResponse<?>> updatePaymentStatus(@PathVariable Long id,
+                                                            @RequestParam String paymentType,
+                                                              @RequestParam String paymentStatus
+    ){
+        OrderDTO data= orderService.updatePaymentStatus(id,paymentType,paymentStatus);
+        return ResponseEntity.ok(
+                new ApiResponse<>(true, "Order Updated Successfully", data)
         );
 
     }
