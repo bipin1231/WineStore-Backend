@@ -1,0 +1,79 @@
+spring:
+  datasource:
+    url: ${DATABASE_URL}
+    username: ${DATABASE_USERNAME}
+    password: ${DATABASE_PASSWORD}
+    hikari:
+      data-source-properties:
+        ssl: true
+        sslmode: require
+
+  jpa:
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+    hibernate:
+      ddl-auto: update
+    show-sql: false
+
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: ${GOOGLE_CLIENT_ID}
+            client-secret: ${GOOGLE_CLIENT_SECRET}
+            scope:
+              - email
+              - profile
+        provider:
+          google:
+            authorization-uri: https://accounts.google.com/o/oauth2/v2/auth
+            token-uri: https://oauth2.googleapis.com/token
+            user-info-uri: https://openidconnect.googleapis.com/v1/userinfo
+
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: ${MAIL_USER}
+    password: ${MAIL_PASSWORD}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+
+  data:
+    redis:
+      host: ${REDIS_HOST}
+      port: ${REDIS_PORT}
+      password: ${REDIS_PASSWORD}
+
+jwt:
+  secret: ${JWT_SECRET}
+
+cloudinary:
+  cloud-name: ${CLOUDINARY_NAME}
+  api-key: ${CLOUDINARY_KEY}
+  api-secret: ${CLOUDINARY_SECRET}
+
+esewa:
+  merchantCode: EPAYTEST
+  secret: "8gBm/:&EnhH.1/q"
+  successUrl: http://localhost:5173/payment/success
+  failureUrl: http://localhost:5173/checkout/payment
+  sandboxUrl: https://rc-epay.esewa.com.np/api/epay/main/v2/form
+  verifyUrl: https://rc.esewa.com.np/api/epay/transaction/status/
+#  merchantCode: ${ESEWA_MERCHANT}
+#  secret: ${ESEWA_SECRET}
+#  successUrl: ${ESEWA_SUCCESS_URL}
+#  failureUrl: ${ESEWA_FAILURE_URL}
+#  sandboxUrl: https://rc-epay.esewa.com.np/api/epay/main/v2/form
+#  verifyUrl: https://rc.esewa.com.np/api/epay/transaction/status/
+
+BREVO:
+  API_KEY: ${BREVO_API_KEY}
+  SENDER_EMAIL: bipinadhikari234@gmail.com
+  SENDER_NAME: Wine Store
+
