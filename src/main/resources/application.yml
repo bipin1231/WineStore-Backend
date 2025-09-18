@@ -1,0 +1,12 @@
+spring:
+  application:
+    name: winestore
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 20MB
+  profiles:
+    active: prod  # default profile
+
+server:
+  port: 8080

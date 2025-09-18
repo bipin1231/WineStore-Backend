@@ -6,6 +6,7 @@ import com.winestore.winestore.DTO.UserRequestDTO;
 import com.winestore.winestore.DTO.UserResponseDTO;
 import com.winestore.winestore.entity.User;
 import com.winestore.winestore.repository.UserRepo;
+import com.winestore.winestore.service.email.BrevoEmailService;
 import com.winestore.winestore.util.JwtUtil;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,6 +37,8 @@ public class UserService {
     private UserRepo userRepo;
     @Autowired
     private RedisService redisService;
+    @Autowired
+    private BrevoEmailService brevoEmailService;
 
 
     @Autowired
@@ -52,16 +55,21 @@ public class UserService {
 
     // ---------------------- SIGNUP ----------------------
     public void sendOtp(UserRequestDTO request) throws JsonProcessingException {
+        Optional<User> user=userRepo.findByEmailAndAuthProvider(request.getEmail(),"none");
+        if(user.isPresent()){
+            throw new RuntimeException("This Account Already Exits");
+        }
         // Generate 4-digit OTP
         String otp = String.valueOf(1000 + new Random().nextInt(9000));
 
         // Create and send OTP email
-        SimpleMailMessage message = new SimpleMailMessage();
-        message.setFrom("bipinadhikari234@gmail.com");
-        message.setTo(request.getEmail());
-        message.setSubject("Your OTP Code: " + otp);
-        message.setText("Hello,\n\nYour OTP for verification is: " + otp + "\n\nThanks,\nWine Store Team");
-        javaMailSender.send(message);
+//        SimpleMailMessage message = new SimpleMailMessage();
+//        message.setFrom("bipinadhikari234@gmail.com");
+//        message.setTo(request.getEmail());
+//        message.setSubject("Your OTP Code: " + otp);
+//        message.setText("Hello,\n\nYour OTP for verification is: " + otp + "\n\nThanks,\nWine Store Team");
+//        javaMailSender.send(message);
+        brevoEmailService.sendOtpEmail(request.getEmail(),otp);
 
         // Store OTP and request data (email, etc.) in Redis for later verification
         redisService.storeOtpAndData(request, otp);
