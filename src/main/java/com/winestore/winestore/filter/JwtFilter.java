@@ -36,6 +36,12 @@ public class JwtFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request,
                                     HttpServletResponse response,
                                     FilterChain chain) throws ServletException, IOException {
+    // Skip JWT auth for preflight but still continue the chain
+    if ("OPTIONS".equalsIgnoreCase(request.getMethod())) {
+        chain.doFilter(request, response);
+        return;
+    }
+
 
         String token = extractToken(request);
 
