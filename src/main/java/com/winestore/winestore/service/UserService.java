@@ -151,22 +151,22 @@ public class UserService {
 
     // ---------------------- CURRENT USER ----------------------
     public UserResponseDTO getCurrentUser() {
-//        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-//        logger.info("Current principal: {}", principal);
-//
-//        if (principal instanceof UserDetails userDetails) {
-//            User user = findByEmailAndAuthProvider(userDetails.getUsername(), "none");
-//            return new UserResponseDTO(user);
-//        }
-//        throw new RuntimeException("Not logged in");
-        CustomOAuth2UserDetails userDetails = (CustomOAuth2UserDetails) SecurityContextHolder
-                .getContext()
-                .getAuthentication()
-                .getPrincipal();
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
-        User user = userDetails.getUser();
-        return new UserResponseDTO(user);
+        if (principal instanceof CustomOAuth2UserDetails userDetails) {
+            User user = userDetails.getUser();
+            return new UserResponseDTO(user);
+        }
+
+        if (principal instanceof org.springframework.security.core.userdetails.User user) {
+            // Fallback for normal login
+            User dbUser = findByEmailAndAuthProvider(user.getUsername(), "none");
+            return new UserResponseDTO(dbUser);
+        }
+
+        throw new RuntimeException("Not logged in");
     }
+
 
     // ---------------------- LOGOUT ----------------------
     public void logout(HttpServletResponse response) {
