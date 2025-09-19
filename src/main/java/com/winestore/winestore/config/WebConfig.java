@@ -23,7 +23,7 @@ public class WebConfig implements WebMvcConfigurer {
     @Bean
     CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of("http://localhost:5173","https://wine-store-rho.vercel.app","https://wine-store-fv1s.vercel.app"));
+        configuration.setAllowedOrigins(List.of("http://localhost:5173","https://wine-store-rho.vercel.app","https://wine-store-fv1s.vercel.app","https://wine-store-fv1s-git-main-bipin1231s-projects.vercel.app"));
         configuration.setAllowedMethods(List.of("GET","POST","PUT","DELETE","OPTIONS"));
         configuration.setAllowedHeaders(List.of("*"));
         configuration.setAllowCredentials(true);
