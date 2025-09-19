@@ -11,12 +11,16 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Component;
 
+import java.io.Serial;
+import java.io.Serializable;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
 @Getter
-public class CustomOAuth2UserDetails implements OAuth2User, UserDetails {
+public class CustomOAuth2UserDetails implements OAuth2User, UserDetails, Serializable {
+    @Serial
+    private static final long serialVersionUID = 1L;
     private final User user;
     private final Map<String, Object> attributes;
 
