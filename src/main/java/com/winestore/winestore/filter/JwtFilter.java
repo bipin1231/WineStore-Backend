@@ -91,15 +91,21 @@ public class JwtFilter extends OncePerRequestFilter {
 
         return null;
     }
-
     private UserDetails getUserDetails(String email, String provider) {
-        // OAuth login
-        if (!"none".equals(provider)) {
-            Optional<User> userOpt = userRepo.findByEmailAndAuthProvider(email, provider);
-            return userOpt.map(user -> new CustomOAuth2UserDetails(user, null)).orElse(null);
-        }
+        Optional<User> userOpt = userRepo.findByEmailAndAuthProvider(email, provider);
 
-        // Normal login (admin)
-        return userDetailsService.loadUserByUsername(email);
+        return userOpt.map(user -> new CustomOAuth2UserDetails(user, null))
+                .orElseThrow(() -> new RuntimeException("User not found with email: " + email));
     }
+
+//    private UserDetails getUserDetails(String email, String provider) {
+//        // OAuth login
+//        if (!"none".equals(provider)) {
+//            Optional<User> userOpt = userRepo.findByEmailAndAuthProvider(email, provider);
+//            return userOpt.map(user -> new CustomOAuth2UserDetails(user, null)).orElse(null);
+//        }
+//
+//        // Normal login (admin)
+//        return userDetailsService.loadUserByUsername(email);
+//    }
 }

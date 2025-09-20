@@ -124,6 +124,8 @@ public class UserService {
         // 4. Create HttpOnly cookie
         ResponseCookie cookie = ResponseCookie.from("jwt", jwt)
                 .httpOnly(true)
+                .secure(true) // ✅ needed in production with HTTPS
+                .sameSite("None") // ✅ allow cross-site cookie (frontend <-> backend)
                 .path("/")
                 .maxAge(72 * 60 * 60)
                 .build();
@@ -154,18 +156,13 @@ public class UserService {
         Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
         if (principal instanceof CustomOAuth2UserDetails userDetails) {
-            User user = userDetails.getUser();
-            return new UserResponseDTO(user);
-        }
-
-        if (principal instanceof org.springframework.security.core.userdetails.User user) {
-            // Fallback for normal login
-            User dbUser = findByEmailAndAuthProvider(user.getUsername(), "none");
-            return new UserResponseDTO(dbUser);
+            return new UserResponseDTO(userDetails.getUser());
         }
 
         throw new RuntimeException("Not logged in");
     }
+
+
 
 
     // ---------------------- LOGOUT ----------------------
