@@ -134,6 +134,19 @@ public class UserService {
         return new UserResponseDTO(user);
     }
 
+    // ---------------------- LOGOUT ----------------------
+    public void logout(HttpServletResponse response) {
+        ResponseCookie cookie = ResponseCookie.from("jwt", "")
+                .httpOnly(true)
+                .secure(true)           // ✅ needed for HTTPS
+                .sameSite("None")       // ✅ allow cross-site
+                .path("/")
+                .maxAge(0)
+                .build();
+        response.addHeader("Set-Cookie", cookie.toString());
+
+    }
+
     // ---------------------- FIND USER ----------------------
     public User findByEmailAndAuthProvider(String email, String authProvider) {
         return userRepo.findByEmailAndAuthProvider(email, authProvider)
@@ -165,15 +178,6 @@ public class UserService {
 
 
 
-    // ---------------------- LOGOUT ----------------------
-    public void logout(HttpServletResponse response) {
-        ResponseCookie cookie = ResponseCookie.from("jwt", "")
-                .httpOnly(true)
-                .path("/")
-                .maxAge(0)
-                .build();
-        response.addHeader("Set-Cookie", cookie.toString());
-    }
 
     // ---------------------- UPDATE USER ----------------------
     public UserResponseDTO updateUser(Long userId, UserRequestDTO userDto) {
