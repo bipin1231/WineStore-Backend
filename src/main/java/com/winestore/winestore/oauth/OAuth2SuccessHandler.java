@@ -59,6 +59,6 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
 
 
         // Redirect to frontend with token
-        response.sendRedirect("http://localhost:5173");
+        response.sendRedirect("https://wine-store-fv1s.vercel.app");
     }
 }
