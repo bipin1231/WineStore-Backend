@@ -1,3 +1,6 @@
+server:
+  forward-headers-strategy: framework   # important for https behind proxy
+
 spring:
   datasource:
     url: ${DATABASE_URL}
