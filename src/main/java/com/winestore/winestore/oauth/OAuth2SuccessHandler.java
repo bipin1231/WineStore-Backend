@@ -51,6 +51,8 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
         // 4. Create HttpOnly cookie
         ResponseCookie cookie = ResponseCookie.from("jwt", token)
                 .httpOnly(true)
+                .secure(true)
+                .sameSite("None")
                 .path("/")
                 .maxAge(72 * 60 * 60)
                 .build();
