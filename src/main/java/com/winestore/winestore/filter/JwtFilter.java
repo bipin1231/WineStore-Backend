@@ -44,7 +44,7 @@ public class JwtFilter extends OncePerRequestFilter {
 
 
         String token = extractToken(request);
-
+        logger.info("Found JWT: {}"+token);
         if (token != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             try {
                 var claims = jwtUtil.extractAllClaims(token);
@@ -53,6 +53,7 @@ public class JwtFilter extends OncePerRequestFilter {
                 String provider = claims.get("authProvider", String.class);
 
                 if (jwtUtil.validateToken(token)) {
+                    logger.info("token is valid");
                     UserDetails userDetails = getUserDetails(email, provider);
 
                     if (userDetails != null) {
