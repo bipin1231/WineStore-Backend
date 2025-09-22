@@ -8,6 +8,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.http.ResponseCookie;
 import org.springframework.security.core.Authentication;
@@ -22,6 +23,8 @@ import java.util.Map;
 
 @Component
 public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
+    @Value("${backend.url}")
+    private String backendUrl;
 
     private final JwtUtil jwtUtil;
 
@@ -51,9 +54,10 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
         // 4. Create HttpOnly cookie
         ResponseCookie cookie = ResponseCookie.from("jwt", token)
                 .httpOnly(true)
-                .secure(true)
-                .sameSite("None")
+                .secure(true) // ✅ needed in production with HTTPS
+                .sameSite("None") // ✅ allow cross-site cookie (frontend <-> backend)
                 .path("/")
+                .domain(backendUrl)  // 👈 force backend domain ,it is stored in the backend url
                 .maxAge(72 * 60 * 60)
                 .build();
         response.addHeader("Set-Cookie", cookie.toString());
