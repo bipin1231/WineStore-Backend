@@ -2,7 +2,7 @@ server:
   forward-headers-strategy: framework   # important for https behind proxy
 
 backend:
-  url: springboot-production-e29d.up.railway.app
+  url: https://springboot-production-e29d.up.railway.app
 
 spring:
   datasource:
