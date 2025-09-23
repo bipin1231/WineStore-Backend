@@ -62,6 +62,8 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
                 .maxAge(72 * 60 * 60)
                 .build();
         response.addHeader("Set-Cookie", cookie.toString());
+        response.setHeader("Access-Control-Allow-Origin", "https://wine-store-fv1s.vercel.app");
+        response.setHeader("Access-Control-Allow-Credentials", "true");
 
 
 
