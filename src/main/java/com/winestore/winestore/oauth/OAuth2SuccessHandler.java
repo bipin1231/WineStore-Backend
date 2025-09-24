@@ -57,7 +57,7 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
                 .secure(true) // ✅ needed in production with HTTPS
                 .sameSite("None") // ✅ allow cross-site cookie (frontend <-> backend)
                 .path("/")
-                .domain("springboot-production-e29d.up.railway.app")
+//                .domain("springboot-production-e29d.up.railway.app")
 //                .domain(backendUrl)  // 👈 force backend domain ,it is stored in the backend url
                 .maxAge(72 * 60 * 60)
                 .build();
