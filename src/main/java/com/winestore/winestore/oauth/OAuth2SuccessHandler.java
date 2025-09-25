@@ -23,8 +23,7 @@ import java.util.Map;
 
 @Component
 public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
-    @Value("${backend.url}")
-    private String backendUrl;
+
 
     private final JwtUtil jwtUtil;
 
@@ -62,12 +61,14 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
                 .maxAge(72 * 60 * 60)
                 .build();
         response.addHeader("Set-Cookie", cookie.toString());
-        response.setHeader("Access-Control-Allow-Origin", "https://wine-store-fv1s.vercel.app");
-        response.setHeader("Access-Control-Allow-Credentials", "true");
+//        response.setHeader("Access-Control-Allow-Origin", "https://wine-store-fv1s.vercel.app");
+//        response.setHeader("Access-Control-Allow-Credentials", "true");
+        response.setContentType("application/json");
+        response.getWriter().write("{\"success\":true, \"userEmail\":\"" + user.getEmail() + "\"}");
 
 
 
         // Redirect to frontend with token
-        response.sendRedirect("https://wine-store-fv1s.vercel.app");
+//        response.sendRedirect("https://wine-store-fv1s.vercel.app");
     }
 }
