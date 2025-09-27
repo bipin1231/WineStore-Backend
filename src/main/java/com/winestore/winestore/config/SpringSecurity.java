@@ -55,11 +55,11 @@ public class SpringSecurity {
 //                        .requestMatchers("/category/**").hasRole("ADMIN")
                         .anyRequest().permitAll()
                 )
-                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
-                .oauth2Login(oauth2 -> oauth2
-                        .userInfoEndpoint(userInfo -> userInfo.userService(customOAuth2UserService))
-                        .successHandler(oAuth2SuccessHandler)
-                );
+                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
+//                .oauth2Login(oauth2 -> oauth2
+//                        .userInfoEndpoint(userInfo -> userInfo.userService(customOAuth2UserService))
+//                        .successHandler(oAuth2SuccessHandler)
+//                );
 
 
         return http.build();

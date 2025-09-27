@@ -83,3 +83,14 @@ BREVO:
   SENDER_EMAIL: bipinadhikari234@gmail.com
   SENDER_NAME: Wine Store
 
+google:
+  client-id: ${GOOGLE_CLIENT_ID}
+  client-secret: ${GOOGLE_CLIENT_SECRET}
+  scope:
+    - email
+    - profile
+  redirect-uri: https://springboot-production-e29d.up.railway.app/auth/google/callback
+
+frontend:
+  url: https://wine-store-fv1s.vercel.app
+
