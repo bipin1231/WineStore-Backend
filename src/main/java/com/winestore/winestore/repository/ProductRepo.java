@@ -85,7 +85,7 @@ public interface ProductRepo extends JpaRepository<Product,Long> {
     Page<ProductVariant> filterProductsASc(@Param("categoryName") String categoryName,
                                            Pageable pageable);
 
-
-
+    @Query("SELECT pv FROM ProductVariant pv WHERE pv.bestSelling = true")
+    Page<ProductVariant> findBestSelling(Pageable pageable);
 
 }

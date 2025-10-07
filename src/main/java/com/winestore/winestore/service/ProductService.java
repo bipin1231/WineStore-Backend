@@ -207,6 +207,15 @@ public class ProductService {
 
     }
 
+    public Page<ProductSizeWithProductDTO> findbestSelling(int page) {
+
+
+        Pageable pageable = PageRequest.of(page,8);
+
+        return productRepo.findBestSelling(pageable).map(ProductSizeWithProductDTO::new);
+
+    }
+
 
 
 }

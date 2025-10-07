@@ -28,6 +28,8 @@ public class ProductSearchFilterController {
     @Autowired
     private ProductService productService;
 
+
+
     @GetMapping("/search-list")
     public List<String> getMatchingNamesBySearchQuery(@RequestParam String query){
         return productService.getMatchingNamesBySearchQuery(query);
@@ -52,5 +54,11 @@ public class ProductSearchFilterController {
                                                          @RequestParam(defaultValue = "20") int size,
                                                          @RequestParam(defaultValue = "asc") String sort){
         return productService.filterAndSort(categoryName,minPrice,maxPrice,page,size,sort);
+    }
+    @GetMapping("best-selling")
+    public Page<ProductSizeWithProductDTO> findBestSelling(
+                                                         @RequestParam(defaultValue = "0") int page,
+                                                         @RequestParam(defaultValue = "20") int size) {
+        return productService.findbestSelling(page);
     }
 }
