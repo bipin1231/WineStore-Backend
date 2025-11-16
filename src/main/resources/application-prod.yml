@@ -2,7 +2,7 @@ server:
   forward-headers-strategy: framework   # important for https behind proxy
 
 backend:
-  url: https://springboot-production-e29d.up.railway.app
+  url: https://wine-store-alg7.onrender.com
 
 spring:
   datasource:
@@ -89,7 +89,7 @@ google:
   scope:
     - email
     - profile
-  redirect-uri: https://springboot-production-e29d.up.railway.app/auth/google/callback
+  redirect-uri: https://wine-store-alg7.onrender.com/auth/google/callback
 
 frontend:
   url: https://wine-store-fv1s.vercel.app
